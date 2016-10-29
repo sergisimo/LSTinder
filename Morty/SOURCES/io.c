@@ -1,7 +1,7 @@
 /* **********************************************
  *
  * @Arxiu : io.c
- * @Finalitat : Implementa funcions d'entrada i sortida.
+ * @Finalitat : Implementa funcions d'entrada i sortida del programa LSTinder.
  * @Autor : Sergi Simó Bosquet - ls30685 & Esteve Genovard Ferriol - ls30742
  * @Data : 2016
  *
@@ -9,7 +9,6 @@
 
 #include "io.h"
 
-/* Sense espais al davant i '\0' al final*/
 char * IO_readKeyboard () {
 
 	char * frase;
