@@ -12,10 +12,13 @@
   /**** LLIBRERIES DE SISTEMA ****/
 
   /**** LLIBRERIES PROPIES ****/
+  #include "io.h"
 
   /**** CONSTANTS ****/
   #define CONSOLE_SEARCH  "search"
   #define CONSOLE_EXIT    "exit"
+  #define CONSOLE_SEARCH_RESPONSE    "\nComanda identificada!\n"
+  #define CONSOLE_EXIT_RESPONSE    "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
 
   /**** CAPÇALERES ****/
 
@@ -24,10 +27,11 @@
    * @Nom : CONSOLE_handleCommand
    * @Definicio : Procediment encarregat de cridar a la funció necessaria segons la comanda que entri l'usuari.
    * @Arg : In: command = cadena de caràcters amb la comanda que ha entrat l'usuari, amb tots els arguments.
-   * @Ret : void
+   * @Ret : Retorna 0 -> Si s'ha de sortir del programa.
+   *        Retorna 1 -> Si no s'ha de tancar el programa.
    *
    ************************************************/
-  void CONSOLE_handleCommand(char * command);
+  int CONSOLE_handleCommand(char * command);
 
   /* **********************************************
    *
@@ -38,5 +42,39 @@
    *
    ************************************************/
   void CONSOLE_handleSystemCommand (char * command);
+
+  /* **********************************************
+   *
+   * @Nom : CONSOLE_split
+   * @Definicio : Procediment encarregat de separar la comanda pel delimitador que vulgui l'usuari.
+   * @Arg : In: command = cadena de caràcters amb la comanda de Linux a realitzar, amb tots els arguments.
+   *        In: splitChar = caràcter amb el delimitador pel qual es vol separar la cadena.
+   *        Out: size = enter que conté la mida de l'array de cadenes que es retorna.
+   * @Ret : Array de cadenes de caràcter amb la comanda separada pels espais.
+   *
+   ************************************************/
+  char ** CONSOLE_split(char * command, char splitChar, int * size);
+
+  /* **********************************************
+   *
+   * @Nom : CONSOLE_compareStrings
+   * @Definicio : Procediment encarregat de comparar de forma case insensitive dos cadenes de caràcter.
+   * @Arg : In: str1 = cadena de caràcters amb la primera que s'ha de comparar
+   *        In: str2 = cadena de caràcters amb la segona que s'ha de comparar
+   * @Ret : Retorna 0 -> Si les cadenes són iguals.
+   *        Retorna 1 -> Si les cadenes són diferents.
+   *
+   ************************************************/
+  int CONSOLE_compareStrings (char * str1, char * str2);
+
+  /* **********************************************
+   *
+   * @Nom : CONSOLE_start
+   * @Definicio : Procediment encarregat d'activar la consola.
+   * @Arg : In: conf = Configuration amb la configuració de la consola.
+   * @Ret : void
+   *
+   ************************************************/
+   void CONSOLE_start();
 
 #endif

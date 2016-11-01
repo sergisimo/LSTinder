@@ -7,7 +7,7 @@
  *
  ************************************************/
 
-#include "io.h"
+#include "../HEADERS/io.h"
 
 char * IO_readKeyboard () {
 
@@ -45,7 +45,7 @@ char * IO_llegirLinia (int f) {
 		length++;
 		cadena = (char*)realloc(cadena, sizeof(char)*(length + 1));
   }while (aux != '\n');
-  cadena[length-1] = '\0';
+  cadena[length-2] = '\0';
 
 	return cadena;
 }

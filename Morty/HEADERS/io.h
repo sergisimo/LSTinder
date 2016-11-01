@@ -12,12 +12,11 @@
 
 	//Llibreries del Sistema
 	#include "tipus.h"
-	#include <fcntl.h>
-	#include <unistd.h>
+
 
 	//Constantes
-	#define FCONF "files/morty.cfg"
-	#define FINF "files/morty.inf"
+	#define FCONF "FILES/morty.cfg"
+	#define FINF "FILES/morty.inf"
 
 	//Capçaleres
   /* **********************************************

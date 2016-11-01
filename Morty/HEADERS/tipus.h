@@ -15,6 +15,10 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include <conio.h>
+	#include <fcntl.h>
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <sys/wait.h>
 
 	//Tipus Propis
 	/*
@@ -24,7 +28,7 @@
 		char * userName;
 		char * addr;
     int sin_port;
-	}Configuration;
+	} Configuration;
 
 	/*
 	* Tipus propi que permet guardar les caràcteristiques del fitxer morty.inf.
@@ -33,6 +37,9 @@
 		char * name;
 		int age;
 		char * description;
-	}Information;
+	} Information;
+
+	Configuration configuration;
+	Information information;
 
 #endif
