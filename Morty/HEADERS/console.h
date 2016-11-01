@@ -6,8 +6,8 @@
 * @Data Creació: 22 d'Octubre del 2016
 *
 ******************************************************************** */
-#ifndef _FITXERS_H_
-  #define _FITXERS_H_
+#ifndef _CONSOLE_H_
+  #define _CONSOLE_H_
 
   /**** LLIBRERIES DE SISTEMA ****/
 
@@ -19,6 +19,8 @@
   #define CONSOLE_EXIT    "exit"
   #define CONSOLE_SEARCH_RESPONSE    "\nComanda identificada!\n"
   #define CONSOLE_EXIT_RESPONSE    "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
+  #define CONSOLE_NOT_FOUND_COMMAND    "Comanda inexistent!\n"
+  #define CONSOLE_MEMORY_ALLOCATION_ERROR    "\nNo s'ha pogut reservar suficient espaic de memòria. Abortant de forma segura...\n\n"
 
   /**** CAPÇALERES ****/
 

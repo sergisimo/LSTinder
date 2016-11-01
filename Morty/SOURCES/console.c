@@ -16,7 +16,7 @@ int CONSOLE_handleCommand (char * command) {
   }
 
   if (!CONSOLE_compareStrings(command, CONSOLE_EXIT)) {
-    write(1, CONSOLE_EXIT_RESPONSE, strlen(CONSOLE_EXIT_RESPONSE));
+    SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
     return 1;
   } else {
     CONSOLE_handleSystemCommand(command);
@@ -45,18 +45,21 @@ void CONSOLE_handleSystemCommand (char * command) {
   fill = fork();
   switch (fill) {
     case -1:
-      //control d'errors
+      SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR);
       break;
     case 0:
       write(1, "\n", 1);
       statusLinux = execvp(command, commandSplited);
-      if (statusLinux == -1) write(2, "Comanda inexistent!\n", strlen("Comanda inexistent!\n"));
+      if (statusLinux == -1) write(2, CONSOLE_NOT_FOUND_COMMAND, strlen(CONSOLE_NOT_FOUND_COMMAND));
       exit(0);
       break;
     default:
       wait(&status);
       break;
   }
+
+  free(command);
+  free(commandSplited);
 }
 
 char ** CONSOLE_split(char * command, char splitChar, int * size) {
@@ -64,10 +67,10 @@ char ** CONSOLE_split(char * command, char splitChar, int * size) {
   int i = 0, j = 0, k = 0;
 
   char ** commandSplited = (char **) malloc (sizeof(char*));
-  if (commandSplited == NULL); //Control d'errors.
+  if (commandSplited == NULL) SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR); //Control d'errors.
   else {
     commandSplited[j] = (char *)malloc(sizeof(char));
-    if (commandSplited[k] == NULL); //Control d'errors.
+    if (commandSplited[k] == NULL) SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR); //Control d'errors.
     else {
       while (command[i] != '\0') {
         if (command[i] != splitChar) {
@@ -76,7 +79,7 @@ char ** CONSOLE_split(char * command, char splitChar, int * size) {
           i++;
           commandSplited[j] = (char *) realloc(commandSplited[j], sizeof(char)*(k+1));
           if (commandSplited[j] == NULL) {
-            //control d'errors
+            SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR);
             break;
           }
         } else {
@@ -87,7 +90,7 @@ char ** CONSOLE_split(char * command, char splitChar, int * size) {
           commandSplited = (char **) realloc(commandSplited, sizeof(char *)*(j+1));
           commandSplited[j] = (char *)malloc(sizeof(char));
           if (commandSplited == NULL) {
-            //control d'errors
+            SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR);
             break;
           }
         }

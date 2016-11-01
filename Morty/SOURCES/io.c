@@ -55,9 +55,9 @@ Configuration IO_llegeixFitxerConfiguration() {
 	int f;
 	Configuration configuration;
 
-	f = open(FCONF, O_RDONLY);
+	f = open(IO_FCONF, O_RDONLY);
   if (f < 0) {
-    write (2, "Error! El fitxer de configuracio no s'ha pogut obrir.", strlen("Error! El fitxer de configuracio no s'ha pogut obrir."));
+    SINGNALS_programExit(-1, IO_OPEN_CONFIGURATION_FILE_ERROR);
   } else {
 		configuration.userName = IO_llegirLinia(f);
 		configuration.addr = IO_llegirLinia(f);
@@ -73,9 +73,9 @@ Information IO_llegeixFitxerInformation(){
 	int f;
 	Information information;
 
-	f = open(FINF, O_RDONLY);
+	f = open(IO_FINF, O_RDONLY);
 	if (f < 0) {
-		write (2, "Error! El fitxer de configuracio no s'ha pogut obrir.", strlen("Error! El fitxer de configuracio no s'ha pogut obrir."));
+		SINGNALS_programExit(-1, IO_OPEN_CONFIGURATION_FILE_ERROR);
 	} else {
 		information.name = IO_llegirLinia(f);
 		information.age = atoi(IO_llegirLinia(f));

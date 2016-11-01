@@ -2,6 +2,8 @@
 
 int main () {
 
+	SIGNALS_initializeSignals();
+	
 	configuration = IO_llegeixFitxerConfiguration();
 	information = IO_llegeixFitxerInformation();
 

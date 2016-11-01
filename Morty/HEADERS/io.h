@@ -11,12 +11,13 @@
 	#define _IO_H_
 
 	//Llibreries del Sistema
-	#include "tipus.h"
+	#include "signals.h"
 
 
 	//Constantes
-	#define FCONF "FILES/morty.cfg"
-	#define FINF "FILES/morty.inf"
+	#define IO_FCONF "FILES/morty.cfg"
+	#define IO_FINF "FILES/morty.inf"
+	#define IO_OPEN_CONFIGURATION_FILE_ERROR "\nError! El fitxer de configuracio no s'ha pogut obrir.\n"
 
 	//Capçaleres
   /* **********************************************
@@ -28,7 +29,6 @@
    ************************************************/
 	char * IO_readKeyboard ();
 
-	//Capçaleres
 	/* **********************************************
 	 *
 	 * @Nom : IO_llegirLinia
@@ -39,7 +39,6 @@
 	 ************************************************/
 	char * IO_llegirLinia (int f);
 
-	//Capçaleres
 	/* **********************************************
 	 *
 	 * @Nom : IO_llegeixFitxerConfiguration
@@ -49,7 +48,6 @@
 	 ************************************************/
 	Configuration IO_llegeixFitxerConfiguration();
 
-	//Capçaleres
 	/* **********************************************
 	 *
 	 * @Nom : IO_llegeixFitxerInformation
