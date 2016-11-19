@@ -1,0 +1,243 @@
+/********************************************************************
+*
+* @Arxiu : conection.c
+* @Finalitat : Implementar les funcions que premetran establir la conexio amb Ricky
+* @Autors : Esteve Genovard Ferriol - ls30742 & Sergi Simó Bosquet - ls30685
+* @Data Creació: 8 Novembre del 2016
+*
+******************************************************************** */
+#include "../HEADERS/conection.h"
+
+struct sockaddr_in CONECTION_preparation(){
+
+  struct sockaddr_in s_addr;
+  memset (&s_addr, 0, sizeof(s_addr));
+  s_addr.sin_family = AF_INET;
+  s_addr.sin_port = htons(configuration.sin_port);
+  //s_addr.sin_addr.s_addr = INADDR_ANY;
+  inet_aton (configuration.addr, &s_addr.sin_addr);
+  return s_addr;
+}
+
+int  CONECTION_stablishConection(struct sockaddr_in s_addr){
+
+  int sfd;
+
+  sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (sfd < 0) {
+    write (2, "[Socket Error]\n", strlen("[Socket Error]\n"));
+  } else {
+    write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
+    if (connect(sfd, (void *) &s_addr, sizeof(s_addr)) < 0) {
+      write (2, "[Conection Error]\n", strlen("[Conection Error]\n"));
+    } else {
+      write(1, "[Connected]\n", strlen("[Connected]\n"));
+    }
+  }
+  return sfd;
+
+}
+
+void* CONECTION_listenServer (void* socket) {
+
+  int info;
+  //char aux[10];
+  int sdf = *((int*)socket);
+
+  //do{
+    read(sdf, &info, sizeof(int));
+    //sprintf(aux, "%d\n", info);
+    //write(1, aux, strlen(aux));
+  //}while(1);
+
+  return NULL;
+}
+
+void reverse(char s[]) {
+    int i, j;
+    char c;
+
+    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
+}
+
+void itoa(int n, char s[]) {
+    int i, sign;
+
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = 0;
+    do {       /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';   /* get next digit */
+    } while ((n /= 10) > 0);     /* delete it */
+    if (sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
+}
+
+void midaParaules(char n[],int num, char nom[]){
+  int i = strlen(n);
+  if (strlen(n) >= (unsigned)num){
+    for (i = 0; i < num; i++){
+      nom[i]=n[i];
+    }
+    nom[i -1]='\0';
+  }else{
+    for (i = 0; i < num; i++){
+      if(strlen(n) < (unsigned)i){
+        nom[i]='\0';
+      }else{
+        nom[i]=n[i];
+      }
+    }
+    nom[i -1]='\0';
+  }
+}
+
+void afegeixParaula (char n[], char nom[], int num){
+  int i = 0;
+  int a = 0;
+  switch (num) {
+    case 1:
+      i = 15;
+      for (i = 15; i < 25; i++){
+        n[i] = nom[a];
+        a++;
+      }
+    break;
+    case 2:
+      i = 25;
+      for (i = 25; i < 40; i++){
+        n[i] = nom[a];
+        a++;
+      }
+    break;
+    case 3:
+      i = 40;
+      for (i = 40; i < 42; i++){
+        n[i] = nom[a];
+        a++;
+      }
+    break;
+    case 4:
+      i = 42;
+      for (i = 42; i < 115; i++){
+        n[i] = nom[a];
+        a++;
+      }
+    break;
+    case 5:
+      i = 15;
+      for (i = 15; i < 115; i++){
+        n[i] = nom[a];
+        a++;
+      }
+    break;
+  }
+}
+
+void CONECTION_newConection(Configuration conf, Information inf, int socket){
+  char tramaCon[115]="CONCLINFO\0\0\0\0\0\0";
+  char nom[10];
+  char nick[15];
+  char age[2];
+  char aux;
+  char tipo[5];
+  char ppal[10];
+  char descripcio[73];
+  int a = 0;
+
+  //ENVIAMENT
+  midaParaules(inf.name, 10, nom);
+  afegeixParaula(tramaCon, nom, 1);
+  midaParaules(conf.userName, 15, nick);
+  afegeixParaula(tramaCon, nick, 2);
+  itoa(12, age);
+  if (strlen(age) < 2){
+    age[1]= '\0';
+  }
+  afegeixParaula(tramaCon, age, 3);
+  midaParaules(inf.description, 73, descripcio);
+  afegeixParaula(tramaCon, descripcio, 4);
+  do {
+    write(socket, &tramaCon[a], 1);
+    a++;
+  }while(a < 115);
+
+  //RESPOSTA
+  a = 0;
+  do {
+    read(socket, &aux, 1);
+    write(1, &aux, 1);
+    tipo[a] = aux;
+    printf("\n");
+    a++;
+  }while(a < 5);
+  //if (!strcmp("CONCL", tipo)){
+  if (1){
+    a = 0;
+    do {
+      read(socket, &aux, 1);
+      write(1, &aux, 1);
+      ppal[a] = aux;
+      printf("\n");
+      a++;
+    }while(a < 10);
+    //if (!strcmp("OK_CONEX\0\0", ppal)){
+    if (1){
+      a = 0;
+      //BE
+    }else{
+      //MALAMENT
+    }
+  }
+}
+
+void CONECTION_desconection(Configuration conf, int socket){
+  char tramaCon[115]="DESC\0--\0\0\0\0\0\0\0\0";
+  char nick[100];
+  int a = 0;
+  char aux;
+  char tipo[5];
+  char ppal[10];
+
+  //ENVIAMENT
+  midaParaules(conf.userName, 100, nick);
+  afegeixParaula(tramaCon, nick, 5);
+  do {
+    write(socket, &tramaCon[a], 1);
+    a++;
+  }while(a < 115);
+
+  //RESPOSTA
+  a= 0;
+  do {
+    read(socket, &aux, 1);
+    write(1, &aux, 1);
+    tipo[a] = aux;
+    printf("\n");
+    a++;
+  }while(a < 5);
+  //if (!strcmp("DESC\0", tipo)){
+  if (1){
+    a = 0;
+    do {
+      read(socket, &aux, 1);
+      write(1, &aux, 1);
+      ppal[a] = aux;
+      printf("\n");
+      a++;
+    }while(a < 10);
+    //if (!strcmp("OK_DESC\0\0\0", ppal)){
+    if (1){
+      //BE
+    }else{
+      //MALAMENT
+    }
+  }
+
+}

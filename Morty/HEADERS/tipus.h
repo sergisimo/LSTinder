@@ -18,7 +18,14 @@
 	#include <fcntl.h>
 	#include <unistd.h>
 	#include <sys/types.h>
+	#include <pthread.h>
 	#include <sys/wait.h>
+	#include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+	#include <arpa/inet.h>
+  #include <unistd.h>
+  #include <fcntl.h>
 
 	//Tipus Propis
 	/*
