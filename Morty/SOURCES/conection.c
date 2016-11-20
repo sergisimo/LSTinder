@@ -24,11 +24,12 @@ int  CONECTION_stablishConection(struct sockaddr_in s_addr){
   int sfd;
 
   sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
   if (sfd < 0)  SINGNALS_programExit(-1, SOCKET_ERROR); //Control d'errors
   else {
     if (connect(sfd, (void *) &s_addr, sizeof(s_addr)) < 0)  SINGNALS_programExit(-1, CONECTION_ERROR); //Control d'errors
     else {
-      write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
+
     }
   }
   return sfd;
@@ -176,7 +177,7 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
 }
 
 void CONECTION_desconection(Configuration conf, int socket){
-  char tramaCon[115]="DESC\0--\0\0\0\0\0\0\0\0", nick[100];
+  char tramaCon[115]="DESC\0\0\0\0\0\0\0\0\0\0\0", nick[100];
   char * tipo;
   char * ppal;
 
@@ -191,6 +192,7 @@ void CONECTION_desconection(Configuration conf, int socket){
   ppal = CONECTION_substring(tramaCon, 5, 14);
   if (!strcmp(tipo, CLIENT_TYPE_DISCONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_DISCONNECT_OK)){
+       	close(socket);
        SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
      }
      else{

@@ -17,7 +17,5 @@ int main () {
 
 	CONSOLE_start(configuration, socket);
 
-	close(socket);
-
 	return 0;
 }

@@ -17,14 +17,14 @@
 
   /**** CONSTANTS ****/
   #define CLIENT_MEMORY_ERROR "Peticion_KO"
-  #define CLIENT_CONECTION_ERROR "Conection_ERROR"
+  #define CLIENT_CONECTION_ERROR "[ERROR Usuari ja connectat]\n"
   #define CLIENT_DISCONECTION_ERROR "Disconection_ERROR"
   #define SOCKET_ERROR "Socket_KO"
-  #define CONECTION_ERROR "Conection_KO"
+  #define CONECTION_ERROR "[can't connect Rick]\n"
   #define CLIENT_TYPE_CONNECT "CONCL"
   #define CLIENT_TYPE_CONNECT_OK "OK_CONEX"
   #define CLIENT_TYPE_CONNECT_KO "KO_CONEX"
-  #define CLIENT_TYPE_DISCONNECT "DESC\0"
+  #define CLIENT_TYPE_DISCONNECT "DESC"
   #define CLIENT_TYPE_DISCONNECT_OK "OK_DESC"
   #define CLIENT_TYPE_DISCONNECT_KO "KO_DESC"
   #define CONSOLE_EXIT_RESPONSE "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
