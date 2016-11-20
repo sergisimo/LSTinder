@@ -26,10 +26,9 @@ int  CONECTION_stablishConection(struct sockaddr_in s_addr){
   sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sfd < 0)  SINGNALS_programExit(-1, SOCKET_ERROR); //Control d'errors
   else {
-    write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
     if (connect(sfd, (void *) &s_addr, sizeof(s_addr)) < 0)  SINGNALS_programExit(-1, CONECTION_ERROR); //Control d'errors
     else {
-      write(1, "[Connected]\n", strlen("[Connected]\n"));
+      write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
     }
   }
   return sfd;
@@ -163,6 +162,7 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
   ppal = CONECTION_substring(tramaCon, 5, 14);
    if (!strcmp(tipo, CLIENT_TYPE_CONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_CONNECT_OK)){
+       write(1, "[Connected]\n", strlen("[Connected]\n"));
        pthread_t threads;
        pthread_create(&threads, NULL, CONECTION_listenServer, &socket);
      }
@@ -176,50 +176,30 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
 }
 
 void CONECTION_desconection(Configuration conf, int socket){
-  char tramaCon[115]="DESC\0--\0\0\0\0\0\0\0\0";
-  char nick[100];
-  int a = 0;
-  char aux;
-  char tipo[5];
-  char ppal[10];
+  char tramaCon[115]="DESC\0--\0\0\0\0\0\0\0\0", nick[100];
+  char * tipo;
+  char * ppal;
 
   //ENVIAMENT
   midaParaules(conf.userName, 100, nick);
   afegeixParaula(tramaCon, nick, 5);
-  do {
-    write(socket, &tramaCon[a], 1);
-    a++;
-  }while(a < 115);
+  write(socket, tramaCon, 115);
 
   //RESPOSTA
-  a= 0;
-  do {
-    read(socket, &aux, 1);
-    write(1, &aux, 1);
-    tipo[a] = aux;
-    printf("\n");
-    a++;
-  }while(a < 5);
-  //if (!strcmp("DESC\0", tipo)){
-  if (1){
-    a = 0;
-    do {
-      read(socket, &aux, 1);
-      write(1, &aux, 1);
-      ppal[a] = aux;
-      printf("\n");
-      a++;
-    }while(a < 10);
-    //if (!strcmp("OK_DESC\0\0\0", ppal)){
-    if (1){
-      //BE
-    }else{
-      //MALAMENT
-    }
+  read(socket, tramaCon, 115);
+  tipo = CONECTION_substring(tramaCon, 0, 4);
+  ppal = CONECTION_substring(tramaCon, 5, 14);
+  if (!strcmp(tipo, CLIENT_TYPE_DISCONNECT)){
+     if(!strcmp(ppal, CLIENT_TYPE_DISCONNECT_OK)){
+       SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
+     }
+     else{
+       SINGNALS_programExit(-1, CLIENT_DISCONECTION_ERROR); //Control d'errors
+     }
+  }else{
+     SINGNALS_programExit(-1, CLIENT_DISCONECTION_ERROR); //Control d'errors
   }
-
 }
-
 
 char * CONECTION_substring(char * string, int start, int final) {
 

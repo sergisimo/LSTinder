@@ -8,7 +8,7 @@
 ******************************************************************** */
 #include "../HEADERS/console.h"
 
-int CONSOLE_handleCommand (char * command) {
+int CONSOLE_handleCommand (char * command, Configuration configuration, int socket) {
 
   if (!CONSOLE_compareStrings(command, CONSOLE_SEARCH)) {
     write(1, CONSOLE_SEARCH_RESPONSE, strlen(CONSOLE_SEARCH_RESPONSE));
@@ -16,7 +16,7 @@ int CONSOLE_handleCommand (char * command) {
   }
 
   if (!CONSOLE_compareStrings(command, CONSOLE_EXIT)) {
-    SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
+    CONECTION_desconection(configuration, socket);
     return 1;
   } else {
     CONSOLE_handleSystemCommand(command);
@@ -128,7 +128,7 @@ int CONSOLE_compareStrings (char * str1, char * str2) {
   return 0;
 }
 
-void CONSOLE_start () {
+void CONSOLE_start (Configuration configuration, int socket) {
 
   int sortir = 0;
 
@@ -140,7 +140,7 @@ void CONSOLE_start () {
     sprintf(prompt, "\n%s >> ", configuration.userName);
     write(1, prompt, strlen(prompt));
     command = IO_readKeyboard();
-    sortir = CONSOLE_handleCommand(command);
+    sortir = CONSOLE_handleCommand(command, configuration, socket);
   }
 
 }

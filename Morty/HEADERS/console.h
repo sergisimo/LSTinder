@@ -13,6 +13,7 @@
 
   /**** LLIBRERIES PROPIES ****/
   #include "io.h"
+  #include "conection.h"
 
   /**** CONSTANTS ****/
   #define CONSOLE_SEARCH  "search"
@@ -33,7 +34,7 @@
    *        Retorna 1 -> Si no s'ha de tancar el programa.
    *
    ************************************************/
-  int CONSOLE_handleCommand(char * command);
+  int CONSOLE_handleCommand(char * command, Configuration configuration, int socket);
 
   /* **********************************************
    *
@@ -77,6 +78,6 @@
    * @Ret : void
    *
    ************************************************/
-   void CONSOLE_start();
+   void CONSOLE_start(Configuration configuration, int socket);
 
 #endif

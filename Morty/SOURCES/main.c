@@ -15,9 +15,8 @@ int main () {
 	socket = CONECTION_stablishConection (s_addr);
 	CONECTION_newConection(configuration, information, socket);
 
-	CONSOLE_start();
+	CONSOLE_start(configuration, socket);
 
-	CONECTION_desconection(configuration, socket);
 	close(socket);
 
 	return 0;
