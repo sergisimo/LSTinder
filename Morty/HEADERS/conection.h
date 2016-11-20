@@ -12,9 +12,17 @@
   /**** LLIBRERIES DE SISTEMA ****/
 
   /**** LLIBRERIES PROPIES ****/
-  #include "tipus.h"
+  #include "signals.h"
+
 
   /**** CONSTANTS ****/
+  #define CLIENT_MEMORY_ERROR "Peticion_KO"
+  #define CLIENT_CONECTION_ERROR "Conection_ERROR"
+  #define SOCKET_ERROR "Socket_KO"
+  #define CONECTION_ERROR "Conection_KO"
+  #define CLIENT_TYPE_CONNECT "CONCL"
+  #define CLIENT_TYPE_CONNECT_OK "OK_CONEX"
+  #define CLIENT_TYPE_CONNECT_KO "KO_CONEX"
 
   /**** CAPÇALERES ****/
 
@@ -44,6 +52,7 @@
     * @Ret : En el nostre cas retornara null.
     *
     ************************************************/
+
     void* CONECTION_listenServer (void* socket) ;
 
     /* **********************************************
@@ -63,6 +72,16 @@
      ************************************************/
 
     void CONECTION_desconection(Configuration conf, int socket);
+
+    /* **********************************************
+     *
+     * @Nom : CONECTION_substring ()
+     * @Definicio : Es l'encarregat de desparsetgar la informació.
+     * @Ret : Retorna la cadena parsetgada.
+     *
+     ************************************************/
+
+    char * CONECTION_substring(char * string, int start, int final);
 
 
 #endif
