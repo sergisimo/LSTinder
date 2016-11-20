@@ -6,13 +6,15 @@
 * @Data Creació: 8 de Novembre del 2016
 *
 ******************************************************************** */
-#include "../HEADERS/server.h"
+#include "../HEADERS/client.h"
 
 int main () {
 
   SIGNALS_initializeSignals();
 
   Configuration conf = IO_readConfigurationFile();
+
+  CLIENT_connect(conf);
 
   SERVER_connect(&conf);
 
