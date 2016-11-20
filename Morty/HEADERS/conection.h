@@ -14,13 +14,14 @@
   /**** LLIBRERIES PROPIES ****/
   #include "signals.h"
 
-
   /**** CONSTANTS ****/
   #define CLIENT_MEMORY_ERROR "Peticion_KO"
+  #define CLIENT_CONECTION "[Connected]\n"
+  #define CLIENT_CONECTING "\n[Conecting Rick...]\n"
   #define CLIENT_CONECTION_ERROR "[ERROR Usuari ja connectat]\n"
   #define CLIENT_DISCONECTION_ERROR "Disconection_ERROR"
   #define SOCKET_ERROR "Socket_KO"
-  #define CONECTION_ERROR "[can't connect Rick]\n"
+  #define CONECTION_ERROR "[can't connect Rick]\n\n"
   #define CLIENT_TYPE_CONNECT "CONCL"
   #define CLIENT_TYPE_CONNECT_OK "OK_CONEX"
   #define CLIENT_TYPE_CONNECT_KO "KO_CONEX"
@@ -28,6 +29,7 @@
   #define CLIENT_TYPE_DISCONNECT_OK "OK_DESC"
   #define CLIENT_TYPE_DISCONNECT_KO "KO_DESC"
   #define CONSOLE_EXIT_RESPONSE "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
+  #define SIGNALS_SIGCONT_MESSAGE    "\nPrograma interromput! Abortant de forma segura...\n\n"
 
   /**** CAPÇALERES ****/
 
@@ -76,7 +78,7 @@
      *
      ************************************************/
 
-    void CONECTION_desconection(Configuration conf, int socket);
+    void CONECTION_desconection(Configuration conf, int socket, int valor);
 
     /* **********************************************
      *

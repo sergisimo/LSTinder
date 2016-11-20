@@ -35,6 +35,7 @@
 		char * userName;
 		char * addr;
     int sin_port;
+		int sock;
 	} Configuration;
 
 	/*

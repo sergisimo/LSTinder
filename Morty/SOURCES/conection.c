@@ -11,11 +11,12 @@
 struct sockaddr_in CONECTION_preparation(){
 
   struct sockaddr_in s_addr;
+
   memset (&s_addr, 0, sizeof(s_addr));
   s_addr.sin_family = AF_INET;
   s_addr.sin_port = htons(configuration.sin_port);
-  //s_addr.sin_addr.s_addr = INADDR_ANY;
   inet_aton (configuration.addr, &s_addr.sin_addr);
+
   return s_addr;
 }
 
@@ -24,34 +25,30 @@ int  CONECTION_stablishConection(struct sockaddr_in s_addr){
   int sfd;
 
   sfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  write (2, "[Conecting Rick...]\n", strlen("[Conecting Rick...]\n"));
+  write (2, CLIENT_CONECTING, strlen(CLIENT_CONECTING));
   if (sfd < 0)  SINGNALS_programExit(-1, SOCKET_ERROR); //Control d'errors
   else {
     if (connect(sfd, (void *) &s_addr, sizeof(s_addr)) < 0)  SINGNALS_programExit(-1, CONECTION_ERROR); //Control d'errors
-    else {
-
-    }
   }
-  return sfd;
 
+  return sfd;
 }
 
 void* CONECTION_listenServer (void* socket) {
 
   int info;
-  //char aux[10];
   int sdf = *((int*)socket);
 
-  //do{
+  do{
     read(sdf, &info, sizeof(int));
-    //sprintf(aux, "%d\n", info);
-    //write(1, aux, strlen(aux));
-  //}while(1);
+    //Tractar resposta
+  }while(1);
 
   return NULL;
 }
 
 void reverse(char s[]) {
+
     int i, j;
     char c;
 
@@ -63,14 +60,15 @@ void reverse(char s[]) {
 }
 
 void itoa(int n, char s[]) {
+
     int i, sign;
 
-    if ((sign = n) < 0)  /* record sign */
-        n = -n;          /* make n positive */
+    if ((sign = n) < 0)
+        n = -n;
     i = 0;
-    do {       /* generate digits in reverse order */
-        s[i++] = n % 10 + '0';   /* get next digit */
-    } while ((n /= 10) > 0);     /* delete it */
+    do {
+        s[i++] = n % 10 + '0';
+    } while ((n /= 10) > 0);
     if (sign < 0)
         s[i++] = '-';
     s[i] = '\0';
@@ -78,7 +76,9 @@ void itoa(int n, char s[]) {
 }
 
 void midaParaules(char n[],int num, char nom[]){
+
   int i = strlen(n);
+
   if (strlen(n) >= (unsigned)num){
     for (i = 0; i < num; i++){
       nom[i]=n[i];
@@ -86,9 +86,8 @@ void midaParaules(char n[],int num, char nom[]){
     nom[i -1]='\0';
   }else{
     for (i = 0; i < num; i++){
-      if(strlen(n) < (unsigned)i){
-        nom[i]='\0';
-      }else{
+      if(strlen(n) < (unsigned)i) nom[i]='\0';
+      else{
         nom[i]=n[i];
       }
     }
@@ -97,8 +96,10 @@ void midaParaules(char n[],int num, char nom[]){
 }
 
 void afegeixParaula (char n[], char nom[], int num){
+
   int i = 0;
   int a = 0;
+
   switch (num) {
     case 1:
       i = 15;
@@ -139,6 +140,7 @@ void afegeixParaula (char n[], char nom[], int num){
 }
 
 void CONECTION_newConection(Configuration conf, Information inf, int socket){
+
   char tramaCon[115]="CONCLINFO\0\0\0\0\0\0";
   char nom[10], nick[15], age[2], descripcio[73];
   char * tipo;
@@ -157,13 +159,14 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
   midaParaules(inf.description, 73, descripcio);
   afegeixParaula(tramaCon, descripcio, 4);
   write(socket, tramaCon, 115);
+
   //RESPOSTA
   read(socket, tramaCon, 115);
   tipo = CONECTION_substring(tramaCon, 0, 4);
   ppal = CONECTION_substring(tramaCon, 5, 14);
    if (!strcmp(tipo, CLIENT_TYPE_CONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_CONNECT_OK)){
-       write(1, "[Connected]\n", strlen("[Connected]\n"));
+       write(1, CLIENT_CONECTION, strlen(CLIENT_CONECTION));
        pthread_t threads;
        pthread_create(&threads, NULL, CONECTION_listenServer, &socket);
      }
@@ -173,10 +176,10 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
    }else{
      SINGNALS_programExit(-1, CLIENT_CONECTION_ERROR); //Control d'errors
    }
-
 }
 
-void CONECTION_desconection(Configuration conf, int socket){
+void CONECTION_desconection(Configuration conf, int socket, int valor){
+  
   char tramaCon[115]="DESC\0\0\0\0\0\0\0\0\0\0\0", nick[100];
   char tramaRebuda[115];
   char * tipo;
@@ -190,13 +193,14 @@ void CONECTION_desconection(Configuration conf, int socket){
   //RESPOSTA
   read(socket, tramaRebuda, 115);
   tipo = CONECTION_substring(tramaRebuda, 0, 4);
-  printf("%s\n", tipo);
   ppal = CONECTION_substring(tramaRebuda, 5, 14);
-  printf("%s\n", ppal);
   if (!strcmp(tipo, CLIENT_TYPE_DISCONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_DISCONNECT_OK)){
        close(socket);
-       SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
+       if (valor) SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
+       else{
+          SINGNALS_programExit(-1, SIGNALS_SIGCONT_MESSAGE);
+       }
      }
      else{
        SINGNALS_programExit(-1, CLIENT_DISCONECTION_ERROR); //Control d'errors

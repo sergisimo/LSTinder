@@ -43,10 +43,9 @@
 	 *
 	 * @Nom : IO_llegeixFitxerConfiguration
 	 * @Definicio : LLegir la informació del fitxer de configuració.
-	 * @Ret : Retorna la informació del fitxer de configuració tractada.
 	 *
 	 ************************************************/
-	Configuration IO_llegeixFitxerConfiguration();
+	void IO_llegeixFitxerConfiguration();
 
 	/* **********************************************
 	 *

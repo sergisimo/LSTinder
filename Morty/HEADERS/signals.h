@@ -13,6 +13,7 @@
 
   /**** LLIBRERIES PROPIES ****/
   #include "tipus.h"
+  #include "conection.h"
 
   /**** CONSTANTS ****/
   #define SIGNALS_SIGCONT_MESSAGE    "\nPrograma interromput! Abortant de forma segura...\n\n"

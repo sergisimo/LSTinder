@@ -14,10 +14,10 @@ void SIGNALS_initializeSignals() {
 }
 
 void SINGNALS_handleSignals(int signal) {
-
+  
   switch (signal) {
     case SIGINT:
-      SINGNALS_programExit(-1, SIGNALS_SIGCONT_MESSAGE);
+      CONECTION_desconection(configuration, configuration.sock, 0);
       break;
   }
 }

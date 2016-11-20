@@ -16,7 +16,7 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
   }
 
   if (!CONSOLE_compareStrings(command, CONSOLE_EXIT)) {
-    CONECTION_desconection(configuration, socket);
+    CONECTION_desconection(configuration, socket, 1);
     return 1;
   } else {
     CONSOLE_handleSystemCommand(command);

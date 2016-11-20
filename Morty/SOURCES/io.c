@@ -50,10 +50,9 @@ char * IO_llegirLinia (int f) {
 	return cadena;
 }
 
-Configuration IO_llegeixFitxerConfiguration() {
+void IO_llegeixFitxerConfiguration() {
 
 	int f;
-	Configuration configuration;
 
 	f = open(IO_FCONF, O_RDONLY);
   if (f < 0) {
@@ -65,8 +64,6 @@ Configuration IO_llegeixFitxerConfiguration() {
 	}
 
 	close(f);
-
-	return configuration;
 }
 
 Information IO_llegeixFitxerInformation(){
