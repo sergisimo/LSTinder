@@ -178,6 +178,7 @@ void CONECTION_newConection(Configuration conf, Information inf, int socket){
 
 void CONECTION_desconection(Configuration conf, int socket){
   char tramaCon[115]="DESC\0\0\0\0\0\0\0\0\0\0\0", nick[100];
+  char tramaRebuda[115];
   char * tipo;
   char * ppal;
 
@@ -187,9 +188,11 @@ void CONECTION_desconection(Configuration conf, int socket){
   write(socket, tramaCon, 115);
 
   //RESPOSTA
-  read(socket, tramaCon, 115);
-  tipo = CONECTION_substring(tramaCon, 0, 4);
-  ppal = CONECTION_substring(tramaCon, 5, 14);
+  read(socket, tramaRebuda, 115);
+  tipo = CONECTION_substring(tramaRebuda, 0, 4);
+  printf("%s\n", tipo);
+  ppal = CONECTION_substring(tramaRebuda, 5, 14);
+  printf("%s\n", ppal);
   if (!strcmp(tipo, CLIENT_TYPE_DISCONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_DISCONNECT_OK)){
        close(socket);

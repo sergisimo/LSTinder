@@ -14,6 +14,7 @@
 
 	//Constants
 	#define IO_FCONF "FILES/rick.cfg"
+	#define IO_MEMORY_ERROR "Error al demanar memòria!\n"
 
 	//Capçaleres
 	/* **********************************************

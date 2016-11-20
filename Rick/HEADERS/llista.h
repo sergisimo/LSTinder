@@ -10,22 +10,9 @@
 	#define _LLISTA_H_
 
   //Llibreries pròpies
-  #include "signals.h"
+  #include "tipus.h"
 
   //Constants
-
-  //Encapsulat
-  typedef struct _node {
-
-  	Client e;
-  	struct _node * seg;
-  } Node;
-
-  typedef struct {
-
-  	Node * pri;
-  	Node * ant;
-  } Llista;
 
   //Capçaleres
 	/* **********************************************
@@ -48,6 +35,8 @@
 	 *
 	 ************************************************/
 	int LLISTA_insereix (Llista * llista, Client client);
+
+	Client LLISTA_consulta(Llista llista);
 
 	/* **********************************************
 	 *

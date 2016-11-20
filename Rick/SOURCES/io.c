@@ -16,7 +16,7 @@ char * IO_readLine (int f) {
 	int length = 0;
 
   cadena = (char *) malloc(sizeof(char));
-	if (cadena == NULL); //control d'errors.
+	if (cadena == NULL) SINGNALS_programExit(-1, IO_MEMORY_ERROR); //control d'errors.
 
   do {
 
@@ -24,7 +24,7 @@ char * IO_readLine (int f) {
     cadena[length] = aux;
 		length++;
 		cadena = (char*)realloc(cadena, sizeof(char)*(length + 1));
-		if (cadena == NULL); //control d'errors.
+		if (cadena == NULL) SINGNALS_programExit(-1, IO_MEMORY_ERROR); //control d'errors.
   }while (aux != '\n');
   cadena[length-1] = '\0';
 

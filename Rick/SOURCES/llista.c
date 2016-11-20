@@ -28,7 +28,9 @@ int LLISTA_insereix(Llista * llista, Client client) {
   Node * aux;
 
   aux = (Node *) malloc (sizeof(Node));
-  if (aux == NULL) return 0;
+  if (aux == NULL) {
+    return 0;
+  }
   else {
 
     aux->e = client;
@@ -38,13 +40,18 @@ int LLISTA_insereix(Llista * llista, Client client) {
   }
 }
 
+Client LLISTA_consulta(Llista llista) {
+
+  return llista.ant->seg->e;
+}
+
 int LLISTA_busca(Llista llista, char * name) {
 
   llista.ant = llista.pri;
 
   while (llista.ant->seg != NULL) {
 
-    if (!strcmp(llista.ant->seg->e.name, name)) return 1;
+    if (!strcmp(llista.ant->seg->e.nickName, name)) return 1;
     llista.ant = llista.ant->seg;
   }
 
@@ -59,7 +66,7 @@ int LLISTA_elimina(Llista * llista, char * name) {
 
   while (llista->ant->seg != NULL) {
 
-    if (!strcmp(llista->ant->seg->e.name, name)) {
+    if (!strcmp(llista->ant->seg->e.nickName, name)) {
       aux = llista->ant->seg;
       llista->ant->seg = llista->ant->seg->seg;
       free(aux);

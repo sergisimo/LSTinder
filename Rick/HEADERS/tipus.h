@@ -21,6 +21,7 @@
   #include <sys/socket.h>
 	#include <sys/types.h>
 	#include <sys/wait.h>
+	#include <pthread.h>
 
 	//Tipus Propis
 	/*
@@ -41,8 +42,34 @@
 	typedef struct {
 
 		char * name;
+		int age;
+		char * description;
+	} Information;
+
+	typedef struct {
+
+		char * nickName;
+		Information info;
 		int fdClient;
 		struct sockaddr_in clientSocket;
 	} Client;
+
+	/*
+	*	Tipus pròpis necessaris per implementar una llista.
+	*/
+	typedef struct _node {
+
+  	Client e;
+  	struct _node * seg;
+  } Node;
+
+  typedef struct {
+
+  	Node * pri;
+  	Node * ant;
+  } Llista;
+
+	//Variables globals
+	Llista llistaClients;
 
 #endif

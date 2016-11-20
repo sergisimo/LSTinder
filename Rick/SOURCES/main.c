@@ -10,32 +10,13 @@
 
 int main () {
 
-  //Configuration conf = IO_readConfigurationFile();
+  SIGNALS_initializeSignals();
 
-  Llista l = LLISTA_crea();
-  Client c1, c2, c3;
+  Configuration conf = IO_readConfigurationFile();
 
-  c1.name = (char *)malloc(sizeof(char)*20);
-  c2.name = (char *)malloc(sizeof(char)*20);
-  c3.name = (char *)malloc(sizeof(char)*20);
+  SERVER_connect(&conf);
 
-  strcpy(c1.name, "Jordi");
-  strcpy(c2.name, "Sergi");
-  strcpy(c3.name, "Esteve");
-
-  LLISTA_insereix(&l, c1);
-  LLISTA_insereix(&l, c2);
-  LLISTA_insereix(&l, c3);
-
-  printf("ESTEVE: %d\n", LLISTA_busca(l, "Esteve"));
-  printf("MANEL: %d\n", LLISTA_busca(l, "Manel"));
-
-  LLISTA_elimina(&l, "Esteve");
-  printf("JORDI: %d\n", LLISTA_busca(l, "Jordi"));
-  printf("ESTEVE: %d\n", LLISTA_busca(l, "Esteve"));
-  printf("SERGI: %d\n", LLISTA_busca(l, "Sergi"));
-
-  LLISTA_destrueix(&l);
+  SERVER_listenClients(conf);
 
   return 0;
 }
