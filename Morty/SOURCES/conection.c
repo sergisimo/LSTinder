@@ -192,7 +192,7 @@ void CONECTION_desconection(Configuration conf, int socket){
   ppal = CONECTION_substring(tramaCon, 5, 14);
   if (!strcmp(tipo, CLIENT_TYPE_DISCONNECT)){
      if(!strcmp(ppal, CLIENT_TYPE_DISCONNECT_OK)){
-       	close(socket);
+       close(socket);
        SINGNALS_programExit(0, CONSOLE_EXIT_RESPONSE);
      }
      else{
