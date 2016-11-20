@@ -13,7 +13,7 @@
 	#include "llista.h"
 
   //Constants
-	#define SIGNALS_SIGCONT_MESSAGE "Interrupció rebuda! Abortant el programa de forma segura.\n"
+	#define SIGNALS_SIGCONT_MESSAGE "\nInterrupció rebuda! Abortant el programa de forma segura.\n"
 
   //Capçaleres
 	/* **********************************************

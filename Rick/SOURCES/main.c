@@ -12,9 +12,9 @@ int main () {
 
   SIGNALS_initializeSignals();
 
-  Configuration conf = IO_readConfigurationFile();
+  conf = IO_readConfigurationFile();
 
-  CLIENT_connect(conf);
+  CLIENT_connect(&conf);
 
   SERVER_connect(&conf);
 

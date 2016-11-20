@@ -71,7 +71,6 @@ void SERVER_listenClients(Configuration configuration) {
 
       write(1, SERVER_CONNECTION_OK, strlen(SERVER_CONNECTION_OK));
       LLISTA_insereix(&llistaClients, client);
-      client = LLISTA_consulta(llistaClients);
       SERVER_sendResponse(client, SERVER_OK_CONNECTION_ID);
       pthread_create(&(threadAux), NULL, SERVER_clientThread, &client);
     } else {
@@ -154,9 +153,9 @@ int SERVER_handleRequest(char * buffer, Client client) {
     if (LLISTA_elimina(&llistaClients, nickName)) {
 
       SERVER_sendResponse(client, SERVER_OK_DISCONNECTION_ID);
-      sprintf(aux, "Exiting %s\n", client.nickName);
+      sprintf(aux, "Exiting %s\n", nickName);
       write(1, aux, strlen(aux));
-      //close(client.fdClient);
+      close(client.fdClient);
       return 1;
     }
     else {

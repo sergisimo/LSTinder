@@ -25,6 +25,8 @@ void SINGNALS_handleSignals(int signal) {
 void SINGNALS_programExit (int exitStatus, char * message) {
 
   LLISTA_destrueix(&llistaClients);
+  close(conf.serverSockedFD);
+  close(conf.clientSocketFD);
 
   if (!exitStatus) write(1, message, strlen(message));
   else write(2, message, strlen(message));

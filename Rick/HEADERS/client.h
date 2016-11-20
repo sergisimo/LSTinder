@@ -22,6 +22,6 @@
   #define CLIENT_KO_CONNECTION_MESSAGE "Rick >> No s'ha pogut connectar amb el servidor LSTinder!\n\n"
 
   /**** CAPÇALERES ****/
-  void CLIENT_connect(Configuration configuration);
+  void CLIENT_connect(Configuration * configuration);
 
 #endif

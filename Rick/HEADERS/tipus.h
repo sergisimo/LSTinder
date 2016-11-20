@@ -71,5 +71,6 @@
 
 	//Variables globals
 	Llista llistaClients;
+	Configuration conf;
 
 #endif

@@ -69,6 +69,10 @@ int LLISTA_elimina(Llista * llista, char * name) {
     if (!strcmp(llista->ant->seg->e.nickName, name)) {
       aux = llista->ant->seg;
       llista->ant->seg = llista->ant->seg->seg;
+
+      free(aux->e.nickName);
+      free(aux->e.info.name);
+      free(aux->e.info.description);
       free(aux);
       return 1;
     }
@@ -87,7 +91,21 @@ void LLISTA_destrueix(Llista * llista) {
 
     aux = llista->ant;
     llista->ant = llista->ant->seg;
+
+    if (aux != llista->pri) {
+      free(aux->e.nickName);
+      free(aux->e.info.name);
+      free(aux->e.info.description);
+      close(aux->e.fdClient);
+    }
     free(aux);
+  }
+
+  if (llista->ant != llista->pri) {
+    free(llista->ant->e.nickName);
+    free(llista->ant->e.info.name);
+    free(llista->ant->e.info.description);
+    close(llista->ant->e.fdClient);
   }
 
   free(llista->ant);

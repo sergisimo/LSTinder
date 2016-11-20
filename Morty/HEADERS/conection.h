@@ -19,7 +19,7 @@
   #define CLIENT_CONECTION "[Connected]\n"
   #define CLIENT_CONECTING "\n[Conecting Rick...]\n"
   #define CLIENT_CONECTION_ERROR "[ERROR Usuari ja connectat]\n"
-  #define CLIENT_DISCONECTION_ERROR "Disconection_ERROR"
+  #define CLIENT_DISCONECTION_ERROR "\nError al desconnectar ja que el servidor es troba fora de servei. Disculpi per les molesties.\n\n"
   #define SOCKET_ERROR "Socket_KO"
   #define CONECTION_ERROR "[can't connect Rick]\n\n"
   #define CLIENT_TYPE_CONNECT "CONCL"
