@@ -30,17 +30,6 @@ void CONSOLE_handleSystemCommand (char * command) {
   int size, fill, status, i, statusLinux;
 
   commandSplited = CONSOLE_split(command, ' ', &size);
-  strcpy(command, commandSplited[0]);
-  for(i = 1; i < size; i++) {
-    strcpy(commandSplited[i-1], commandSplited[i]);
-  }
-  commandSplited = (char **)realloc(commandSplited, sizeof(char*)*(size-1));
-
-  if (commandSplited == NULL) {
-    commandSplited = (char **) malloc (sizeof(char*));
-    commandSplited[0] = (char*)  malloc (sizeof(char));
-    commandSplited[0][0] = '\0';
-  }
 
   fill = fork();
   switch (fill) {
@@ -49,7 +38,7 @@ void CONSOLE_handleSystemCommand (char * command) {
       break;
     case 0:
       write(1, "\n", 1);
-      statusLinux = execvp(command, commandSplited);
+      statusLinux = execvp(commandSplited[0], commandSplited);
       if (statusLinux == -1) write(2, CONSOLE_NOT_FOUND_COMMAND, strlen(CONSOLE_NOT_FOUND_COMMAND));
       exit(0);
       break;
@@ -98,6 +87,13 @@ char ** CONSOLE_split(char * command, char splitChar, int * size) {
       commandSplited[j][k] = '\0';
     }
   }
+
+  commandSplited = (char **) realloc(commandSplited, sizeof(char *)*(j+1));
+  if (commandSplited == NULL) {
+    SINGNALS_programExit(-1, CONSOLE_MEMORY_ALLOCATION_ERROR);
+  }
+
+  commandSplited[j+1] = NULL;
 
   *size = j+1;
   return commandSplited;
