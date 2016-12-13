@@ -7,6 +7,7 @@
 *
 ******************************************************************** */
 #include "../HEADERS/client.h"
+#include "../HEADERS/server.h"
 
 int main () {
 

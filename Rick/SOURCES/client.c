@@ -10,12 +10,11 @@
 
 void CLIENT_connect (Configuration * configuration) {
 
-  char tramaCon[115] = CLIENT_CONNECTION_REQUEST;
-  char * type;
+  Command command;
+  CommandType commandType;
 
-  int i;
-
-  for(i = 5; i < 115; i++) tramaCon[i]='\0';
+  COMMAND_create(command);
+  COMMAND_setType(command, CLIENT_CONNECTION_REQUEST);
 
   configuration->clientSocketFD = socket(AF_INET, SOCK_STREAM, 0);
   if (configuration->clientSocketFD < 0) {
@@ -26,14 +25,17 @@ void CLIENT_connect (Configuration * configuration) {
       SINGNALS_programExit(-1, CLIENT_KO_CONNECTION_MESSAGE);
     } else {
 
-      write(configuration->clientSocketFD, tramaCon, 115);
-      read(configuration->clientSocketFD, tramaCon, 115);
+      write(configuration->clientSocketFD, command, COMMAND_SIZE);
+      read(configuration->clientSocketFD, command, COMMAND_SIZE);
 
-      type = SERVER_substring(tramaCon, 0, 4);
-      if (!strcmp(type, CLIENT_CONECTION_OK_RESPONSE)){
+      commandType = COMMAND_getType(command);
+
+      if (commandType == LSTinderConnectionOK) {
 
         write (1, CLIENT_OK_CONNECTION_MESSAGE, strlen(CLIENT_OK_CONNECTION_MESSAGE));
-      }else{
+      }
+
+      if (commandType == LSTinderConnectionKO) {
 
         SINGNALS_programExit(-1, CLIENT_KO_CONNECTION_MESSAGE); //Control d'errors
       }

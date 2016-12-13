@@ -13,12 +13,12 @@ void SERVER_connect(Configuration *configuration) {
   configuration->serverSockedFD = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (configuration->serverSockedFD < 0) {
 
-    SINGNALS_programExit(-1, SERVER_SOCKET_ERROR);
+    SINGNALS_programExit(-1, SIGNALS_SOCKET_ERROR);
   } else {
 
     if (bind(configuration->serverSockedFD, (void *) &(configuration->serverConf), sizeof(configuration->serverConf)) < 0) {
 
-      SINGNALS_programExit(-1, SERVER_BIND_ERROR);
+      SINGNALS_programExit(-1, SIGNALS_BIND_ERROR);
     } else {
 
       listen(configuration->serverSockedFD, SERVER_MAX_CONNECTIONS);
@@ -32,12 +32,14 @@ void* SERVER_clientThread(void * clientPointer) {
   Client client = *((Client *)clientPointer);
   int sortir = 0;
 
-  char buffer[115];
+  Command command;
+
+  COMMAND_create(command);
 
   while (!sortir) {
 
-    read(client.fdClient, buffer, 115);
-    sortir = SERVER_handleRequest(buffer, client);
+    read(client.fdClient, command, COMMAND_SIZE);
+    sortir = SERVER_handleRequest(command, client);
   }
 
   return NULL;
@@ -45,7 +47,7 @@ void* SERVER_clientThread(void * clientPointer) {
 
 void SERVER_listenClients(Configuration configuration) {
 
-  char buffer[115];
+  Command command;
   char aux[50];
 
   int connectionStatus;
@@ -55,14 +57,15 @@ void SERVER_listenClients(Configuration configuration) {
   pthread_t threadAux;
 
   llistaClients = LLISTA_crea();
+  COMMAND_create(command);
 
   while (1) {
 
     c_len = sizeof(client.clientSocket);
     client.fdClient = accept(configuration.serverSockedFD, (void *) &client.clientSocket, &c_len);
 
-    read(client.fdClient, buffer, 115);
-    connectionStatus = SERVER_handleConnex(buffer, &client);
+    read(client.fdClient, command, COMMAND_SIZE);
+    connectionStatus = SERVER_handleConnex(command, &client);
 
     sprintf (aux, "Peticio new morty %s\n", client.nickName);
     write(1, aux, strlen(aux));
@@ -82,111 +85,87 @@ void SERVER_listenClients(Configuration configuration) {
 
 void SERVER_sendResponse(Client client, int type) {
 
-  char buffer[115];
+  Command command;
 
-  int i;
+  COMMAND_create(command);
 
   switch (type) {
     case SERVER_OK_CONNECTION_ID:
-      strcpy(buffer, SERVER_RESPONSE_CONNECTION_OK);
-      for (i = 14; i < 115; i++) buffer[i] = '\0';
-      write(client.fdClient, buffer, 115);
+
+      COMMAND_setType(command, COMMAND_TYPE_MORTY_CONNECTION);
+      COMMAND_setInfo(command, COMMAND_INFO_MORTY_CONNECTION_OK);
       break;
+
     case SERVER_KO_CONNECTION_ID:
-      strcpy(buffer, SERVER_RESPONSE_CONNECTION_KO);
-      for (i = 14; i < 115; i++) buffer[i] = '\0';
-      write(client.fdClient, buffer, 115);
+
+      COMMAND_setType(command, COMMAND_TYPE_MORTY_CONNECTION);
+      COMMAND_setInfo(command, COMMAND_INFO_MORTY_CONNECTION_KO);
       break;
+
     case SERVER_OK_DISCONNECTION_ID:
-      strcpy(buffer, SERVER_RESPONSE_DISCONNECTION_OK);
-      for (i = 12; i < 115; i++) buffer[i] = '\0';
-      write(client.fdClient, buffer, 115);
+
+      COMMAND_setType(command, COMMAND_TYPE_MORTY_DISCONNECTION);
+      COMMAND_setInfo(command, COMMAND_INFO_MORTY_DISCONNECTION_OK);
       break;
+
     case SERVER_KO_DISCONNECTION_ID:
-      strcpy(buffer, SERVER_RESPONSE_DISCONNECTION_KO);
-      for (i = 12; i < 115; i++) buffer[i] = '\0';
-      write(client.fdClient, buffer, 115);
+
+      COMMAND_setType(command, COMMAND_TYPE_MORTY_DISCONNECTION);
+      COMMAND_setInfo(command, COMMAND_INFO_MORTY_DISCONNECTION_KO);
       break;
   }
+
+  write(client.fdClient, command, COMMAND_SIZE);
 }
 
-int SERVER_handleConnex(char * buffer, Client * client) {
+int SERVER_handleConnex(Command command, Client * client) {
 
-  char * type;
-  char * info;
+  CommandType commandType = COMMAND_getType(command);
+  CommandInfo commandInfo = COMMAND_getInfo(command);
 
-  type = SERVER_substring(buffer, 0, 4);
-  info = SERVER_substring(buffer, 5, 14);
+  // FER LA PART DE LA INFO **********************
+  if (commandType == MortyConnection && commandInfo == MortyConnectionInfo) {
 
-  if (!strcmp(type, SERVER_TYPE_CONNECT) && !strcmp(info, SERVER_INFO_CONNECT)) {
-
-    client->info.name = SERVER_substring(buffer, 15, 24);
-    client->nickName = SERVER_substring(buffer, 25, 39);
-    client->info.age = atoi(SERVER_substring(buffer, 40, 41));
-    client->info.description = SERVER_substring(buffer, 42, 114);
-
-    free(type);
-    free(info);
+    client->info.name = COMMAND_getData(command, 15, 24);
+    client->nickName = COMMAND_getData(command, 25, 39);
+    client->info.age = atoi(COMMAND_getData(command, 40, 41));
+    client->info.description = COMMAND_getData(command, 42, 114);
 
     if (LLISTA_busca(llistaClients, client->nickName)) return 0;
     else return 1;
   } else {
 
-    free(type);
-    free(info);
     return 0;
   }
 }
 
-int SERVER_handleRequest(char * buffer, Client client) {
+int SERVER_handleRequest(Command command, Client client) {
 
-  char * type;
   char aux[50];
   char * nickName;
 
-  type = SERVER_substring(buffer, 0, 4);
+  switch (COMMAND_getType(command)) {
 
-  if (!strcmp(type, SERVER_TYPE_DISCONNECT)) {
+    case MortyDisconnection:
 
-    nickName = SERVER_substring(buffer, 15, 29);
+      nickName = COMMAND_getData(command, 15, 29);
 
-    if (LLISTA_elimina(&llistaClients, nickName)) {
+      if (LLISTA_elimina(&llistaClients, nickName)) {
 
-      SERVER_sendResponse(client, SERVER_OK_DISCONNECTION_ID);
-      sprintf(aux, "Exiting %s\n", nickName);
-      write(1, aux, strlen(aux));
-      close(client.fdClient);
-      return 1;
-    }
-    else {
-      SERVER_sendResponse(client, SERVER_KO_DISCONNECTION_ID);
-      return 0;
-    }
+        SERVER_sendResponse(client, SERVER_OK_DISCONNECTION_ID);
+        sprintf(aux, "Exiting %s\n", nickName);
+        write(1, aux, strlen(aux));
+        close(client.fdClient);
+        return 1;
+      } else {
+        SERVER_sendResponse(client, SERVER_KO_DISCONNECTION_ID);
+        return 0;
+      }
+      break;
+
+      default:
+        break;
   }
 
   return 0;
-}
-
-char * SERVER_substring(char * string, int start, int final) {
-
-  char * destination;
-
-  int i, j = 0;
-
-  destination = (char *) malloc(sizeof(char)*(final-start+2));
-
-  if (destination == NULL) SINGNALS_programExit(-1, SERVER_MEMORY_ERROR); //Control d'errors
-  else {
-    for (i = start; i <= final && string[i] != '\0'; i++) {
-
-      destination[j] = string[i];
-      j++;
-    }
-
-    destination[j] = '\0';
-  }
-
-  destination = realloc(destination, sizeof(char)*strlen(destination));
-
-  return destination;
 }

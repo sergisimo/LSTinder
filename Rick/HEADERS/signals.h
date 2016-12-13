@@ -14,6 +14,9 @@
 
   //Constants
 	#define SIGNALS_SIGCONT_MESSAGE "\nInterrupció rebuda! Abortant el programa de forma segura.\n"
+	#define SIGNALS_MEMORY_ERROR "Error al demanar memòria!\n"
+	#define SIGNALS_SOCKET_ERROR "Error al crear el socket!\n"
+	#define SIGNALS_BIND_ERROR "Error al crear el bind!\n"
 
   //Capçaleres
 	/* **********************************************

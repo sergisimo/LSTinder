@@ -12,23 +12,13 @@
   //Llibreries pròpies
   #include "llista.h"
 	#include "io.h"
+	#include "command.h"
 
   //Constants
   #define SERVER_MAX_CONNECTIONS 20
 
-	#define SERVER_TYPE_CONNECT "CONCL"
-	#define SERVER_TYPE_DISCONNECT "DESC"
-
 	#define SERVER_CONNECTION_OK "Peticio OK\n"
 	#define SERVER_CONNECTION_KO "Peticio KO, usuari ja existent.\n"
-	#define SERVER_INFO_CONNECT "INFO"
-	#define SERVER_SOCKET_ERROR "Error al crear el socket!\n"
-	#define SERVER_BIND_ERROR "Error al crear el bind!\n"
-	#define SERVER_MEMORY_ERROR "Error al demanar memòria!\n"
-	#define SERVER_RESPONSE_CONNECTION_OK "CONCLOK_CONEX"
-	#define SERVER_RESPONSE_CONNECTION_KO "CONCLKO_CONEX"
-	#define SERVER_RESPONSE_DISCONNECTION_OK "DESC-OK_DESC"
-	#define SERVER_RESPONSE_DISCONNECTION_KO "DESC-KO_DESC"
 	#define SERVER_ON_MESSAGE "Rick >> Sense connexions\n\n"
 
 	#define SERVER_OK_CONNECTION_ID 1
@@ -55,10 +45,8 @@
 
 	void SERVER_sendResponse(Client client, int type);
 
-	int SERVER_handleConnex(char * buffer, Client * client);
+	int SERVER_handleConnex(Command command, Client * client);
 
-	int SERVER_handleRequest(char * buffer, Client client);
-
-	char * SERVER_substring(char * string, int start, int final);
+	int SERVER_handleRequest(Command command, Client client);
 
 #endif

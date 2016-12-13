@@ -55,6 +55,42 @@
 	} Client;
 
 	/*
+	*	Tipus pròpis necessaris per implementar les comandes que s'utilitzaran per la comunicació client servidor.
+	*/
+	typedef char Command[115];
+
+	/*
+	*	Enumeració per tal de oder gestionar els tipus de comandes.
+	*/
+	typedef enum {
+
+		LSTinderConnectionOK,
+		LSTinderConnectionKO,
+		LSTinderClientOK,
+		LSTinderClientKO,
+		LSTinderDeleteOK,
+		LSTinderDeleteKO,
+		LSTinderUser,
+		LSTinderFiUser,
+		LSTinderMatch,
+		MortyConnection,
+		MortyDisconnection,
+		MortyNext,
+		MortyLike
+	}CommandType;
+
+	/*
+	*	Enumeració per tal de oder gestionar la info de comandes.
+	*/
+	typedef enum {
+
+		LSTinderUserInfo,
+		MortyConnectionInfo,
+		MortyNextInfo,
+		MortyLikeInfo
+	}CommandInfo;
+
+	/*
 	*	Tipus pròpis necessaris per implementar una llista.
 	*/
 	typedef struct _node {

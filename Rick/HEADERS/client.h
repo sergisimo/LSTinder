@@ -12,7 +12,9 @@
   /**** LLIBRERIES DE SISTEMA ****/
 
   /**** LLIBRERIES PROPIES ****/
-  #include "server.h"
+  #include "command.h"
+  #include "signals.h"
+
 
   /**** CONSTANTS ****/
   #define CLIENT_CONNECTION_REQUEST "CONSV"

@@ -25,7 +25,7 @@
   #define CLIENT_TYPE_CONNECT "CONCL"
   #define CLIENT_TYPE_CONNECT_OK "OK_CONEX"
   #define CLIENT_TYPE_CONNECT_KO "KO_CONEX"
-  #define CLIENT_TYPE_DISCONNECT "DESC-"
+  #define CLIENT_TYPE_DISCONNECT "DESC"
   #define CLIENT_TYPE_DISCONNECT_OK "OK_DESC"
   #define CLIENT_TYPE_DISCONNECT_KO "KO_DESC"
   #define CONSOLE_EXIT_RESPONSE "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
@@ -59,7 +59,6 @@
     * @Ret : En el nostre cas retornara null.
     *
     ************************************************/
-
     void* CONECTION_listenServer (void* socket) ;
 
     /* **********************************************
@@ -68,7 +67,6 @@
      * @Definicio : Es l'encarregat del protocol de conexio amb Rick.
      *
      ************************************************/
-
     void CONECTION_newConection(Configuration conf, Information inf, int socket);
 
     /* **********************************************
@@ -77,7 +75,6 @@
      * @Definicio : Es l'encarregat del protocol de desconexio amb Rick.
      *
      ************************************************/
-
     void CONECTION_desconection(Configuration conf, int socket, int valor);
 
     /* **********************************************
@@ -87,7 +84,6 @@
      * @Ret : Retorna la cadena parsetgada.
      *
      ************************************************/
-
     char * CONECTION_substring(char * string, int start, int final);
 
 
