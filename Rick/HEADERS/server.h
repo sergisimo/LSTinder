@@ -26,8 +26,6 @@
 	#define SERVER_OK_DISCONNECTION_ID 3
 	#define SERVER_KO_DISCONNECTION_ID 4
 
-
-
   //Capçaleres
   /* **********************************************
    *

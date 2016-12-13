@@ -8,6 +8,8 @@
 ******************************************************************** */
 #include "../HEADERS/signals.h"
 
+pthread_mutex_t semaforLlista = PTHREAD_MUTEX_INITIALIZER;
+
 void SIGNALS_initializeSignals() {
 
   signal(SIGINT, SINGNALS_handleSignals);
@@ -17,6 +19,7 @@ void SINGNALS_handleSignals(int signal) {
 
   switch (signal) {
     case SIGINT:
+
       SINGNALS_programExit(-1, SIGNALS_SIGCONT_MESSAGE);
       break;
   }
@@ -24,7 +27,13 @@ void SINGNALS_handleSignals(int signal) {
 
 void SINGNALS_programExit (int exitStatus, char * message) {
 
-  LLISTA_destrueix(&llistaClients);
+  if (exitStatus != -2) {
+    pthread_mutex_lock(&semaforLlista);
+    LLISTA_destrueix(&llistaClients);
+    pthread_mutex_unlock(&semaforLlista);
+    pthread_mutex_destroy(&semaforLlista);
+  }
+
   close(conf.serverSockedFD);
   close(conf.clientSocketFD);
 

@@ -48,6 +48,8 @@
 
 	CommandInfo COMMAND_getInfo(Command command);
 
+	int COMMAND_getPort(Command command);
+
 	char * COMMAND_getData(Command command, int start, int final);
 
 #endif

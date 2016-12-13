@@ -91,6 +91,7 @@ void CONECTION_desconection(Configuration conf, int socket, int valor){
   CommandInfo commandInfo;
 
   //ENVIAMENT
+  COMMAND_create(command);
   COMMAND_setType(command, COMMAND_TYPE_RICK_DISCONNECTION);
   COMMAND_setData(command, conf.userName, 15);
 

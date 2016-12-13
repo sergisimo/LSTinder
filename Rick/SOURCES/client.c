@@ -18,11 +18,11 @@ void CLIENT_connect (Configuration * configuration) {
 
   configuration->clientSocketFD = socket(AF_INET, SOCK_STREAM, 0);
   if (configuration->clientSocketFD < 0) {
-    SINGNALS_programExit(-1, CLIENT_KO_CONNECTION_MESSAGE);
+    SINGNALS_programExit(-2, CLIENT_KO_CONNECTION_MESSAGE);
   } else {
 
     if (connect(configuration->clientSocketFD, (void *) &(configuration->clientConf), sizeof(configuration->clientConf)) < 0) {
-      SINGNALS_programExit(-1, CLIENT_KO_CONNECTION_MESSAGE);
+      SINGNALS_programExit(-2, CLIENT_KO_CONNECTION_MESSAGE);
     } else {
 
       write(configuration->clientSocketFD, command, COMMAND_SIZE);
@@ -37,7 +37,7 @@ void CLIENT_connect (Configuration * configuration) {
 
       if (commandType == LSTinderConnectionKO) {
 
-        SINGNALS_programExit(-1, CLIENT_KO_CONNECTION_MESSAGE); //Control d'errors
+        SINGNALS_programExit(-2, CLIENT_KO_CONNECTION_MESSAGE); //Control d'errors
       }
     }
   }
