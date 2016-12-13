@@ -27,7 +27,7 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
 void CONSOLE_handleSystemCommand (char * command) {
 
   char ** commandSplited;
-  int size, fill, status, i, statusLinux;
+  int size, fill, status, statusLinux;
 
   commandSplited = CONSOLE_split(command, ' ', &size);
 

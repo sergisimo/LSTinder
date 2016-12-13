@@ -47,6 +47,38 @@
 		char * description;
 	} Information;
 
+	/*
+	*	Tipus pròpis necessaris per implementar les comandes que s'utilitzaran per la comunicació client servidor.
+	*/
+	typedef char Command[115];
+
+	/*
+	* Enumeration per saber quin tipus de trama hem rebut del servidor.
+	*/
+	typedef enum {
+
+		RickMatch,
+		RickConnection,
+		RickDisconnection,
+		RickNewMorty,
+		RickLike,
+		MortyXat
+	} CommandType;
+
+	/*
+	* Enumeration per saber quina info de trama hem rebut del servidor.
+	*/
+	typedef enum {
+
+		RickConnectionOK,
+		RickConnectionKO,
+		RickDisconnectionOK,
+		RickDisconnectionKO,
+		RickNewMortyInfo,
+		RickLikeInfo,
+		MortyXatExit
+	} CommandInfo;
+
 	Configuration configuration;
 	Information information;
 

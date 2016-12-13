@@ -12,24 +12,11 @@
   /**** LLIBRERIES DE SISTEMA ****/
 
   /**** LLIBRERIES PROPIES ****/
-  #include "signals.h"
+  #include "command.h"
 
   /**** CONSTANTS ****/
-  #define CLIENT_MEMORY_ERROR "Peticion_KO"
   #define CLIENT_CONECTION "[Connected]\n"
   #define CLIENT_CONECTING "\n[Conecting Rick...]\n"
-  #define CLIENT_CONECTION_ERROR "[ERROR Usuari ja connectat]\n"
-  #define CLIENT_DISCONECTION_ERROR "\nError al desconnectar ja que el servidor es troba fora de servei. Disculpi per les molesties.\n\n"
-  #define SOCKET_ERROR "Socket_KO"
-  #define CONECTION_ERROR "[can't connect Rick]\n\n"
-  #define CLIENT_TYPE_CONNECT "CONCL"
-  #define CLIENT_TYPE_CONNECT_OK "OK_CONEX"
-  #define CLIENT_TYPE_CONNECT_KO "KO_CONEX"
-  #define CLIENT_TYPE_DISCONNECT "DESC"
-  #define CLIENT_TYPE_DISCONNECT_OK "OK_DESC"
-  #define CLIENT_TYPE_DISCONNECT_KO "KO_DESC"
-  #define CONSOLE_EXIT_RESPONSE "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
-  #define SIGNALS_SIGCONT_MESSAGE    "\nPrograma interromput! Abortant de forma segura...\n\n"
 
   /**** CAPÇALERES ****/
 
@@ -59,7 +46,7 @@
     * @Ret : En el nostre cas retornara null.
     *
     ************************************************/
-    void* CONECTION_listenServer (void* socket) ;
+    //void* CONECTION_listenServer (void* socket) ;
 
     /* **********************************************
      *
@@ -76,15 +63,5 @@
      *
      ************************************************/
     void CONECTION_desconection(Configuration conf, int socket, int valor);
-
-    /* **********************************************
-     *
-     * @Nom : CONECTION_substring ()
-     * @Definicio : Es l'encarregat de desparsetgar la informació.
-     * @Ret : Retorna la cadena parsetgada.
-     *
-     ************************************************/
-    char * CONECTION_substring(char * string, int start, int final);
-
 
 #endif
