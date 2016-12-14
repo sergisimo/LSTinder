@@ -70,5 +70,10 @@
 	 ************************************************/
 	void LLISTA_destrueix (Llista * llista);
 
+	void LLISTA_vesInici(Llista * llista);
+
+	void LLISTA_avanca(Llista * llista);
+
+	int LLISTA_fi(Llista llista);
 
 #endif

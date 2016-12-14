@@ -32,7 +32,7 @@ void* SERVER_clientThread(void * clientPointer) {
   Client client = *((Client *)clientPointer);
   free(clientPointer);
 
-  int sortir = 0, status;
+  int sortir = 0, status , quants = 0;
 
   char aux[50];
 
@@ -44,7 +44,7 @@ void* SERVER_clientThread(void * clientPointer) {
 
     status = read(client.fdClient, command, COMMAND_SIZE);
 
-    if (status != 0) sortir = SERVER_handleRequest(command, client);
+    if (status != 0) sortir = SERVER_handleRequest(command, client, &quants);
     else {
 
       sprintf(aux, "Exiting %s\n", client.nickName);
@@ -144,10 +144,12 @@ void SERVER_sendResponse(Client client, int type) {
 
 int SERVER_handleConnex(Command command, Client * client) {
 
+  char age[3];
+  char fdSocket[10];
+
   CommandType commandType = COMMAND_getType(command);
   CommandInfo commandInfo = COMMAND_getInfo(command);
 
-  // FER LA PART DE LA INFO **********************
   if (commandType == MortyConnection && commandInfo == MortyConnectionInfo) {
 
     client->info.name = COMMAND_getData(command, 15, 24);
@@ -155,42 +157,153 @@ int SERVER_handleConnex(Command command, Client * client) {
     client->info.age = atoi(COMMAND_getData(command, 40, 41));
     client->info.description = COMMAND_getData(command, 42, 114);
 
+    sprintf(age, "%d", client->info.age);
+    sprintf(fdSocket, "%d", client->fdClient);
+
+    COMMAND_create(command);
+    COMMAND_setType(command, COMMAND_TYPE_LSTINDER_CLIENT_SEND);
+    COMMAND_setInfo(command, fdSocket);
+    COMMAND_setData(command, client->info.name, 15);
+    COMMAND_setData(command, client->nickName, 25);
+    COMMAND_setData(command, age, 40);
+    COMMAND_setData(command, client->info.description, 42);
+
+    write(conf.clientSocketFD, command, COMMAND_SIZE);
+    read(conf.clientSocketFD, command, COMMAND_SIZE);
+
+    commandType = COMMAND_getType(command);
+
     pthread_mutex_lock(&semaforLlista);
-    if (LLISTA_busca(llistaClients, client->nickName)) {
+    if (LLISTA_busca(llistaClients, client->nickName) && commandType != LSTinderClientOK) {
+
       pthread_mutex_unlock(&semaforLlista);
       return 0;
     } else {
+
       pthread_mutex_unlock(&semaforLlista);
       return 1;
     }
   } else return 0;
 }
 
-int SERVER_handleRequest(Command command, Client client) {
+int SERVER_handleRequest(Command command, Client client, int * quants) {
 
   char aux[50];
+  char fdSocket[10];
+  char age[3];
+  int i = 0;
+  Client clientAux;
+
+  CommandType commandType;
 
   switch (COMMAND_getType(command)) {
 
     case MortyDisconnection:
 
+      sprintf(fdSocket, "%d", client.fdClient);
+      COMMAND_create(command);
+      COMMAND_setType(command, COMMAND_TYPE_LSTINDER_DELETE_SEND);
+      COMMAND_setInfo(command, fdSocket);
+      COMMAND_setData(command, client.nickName, 15);
+
+      write(conf.clientSocketFD, command, COMMAND_SIZE);
+      read(conf.clientSocketFD, command, COMMAND_SIZE);
+
+      commandType = COMMAND_getType(command);
+
       sprintf(aux, "Exiting %s\n", client.nickName);
+
       pthread_mutex_lock(&semaforLlista);
-      if (LLISTA_elimina(&llistaClients, client.nickName)) {
+      if (LLISTA_elimina(&llistaClients, client.nickName) && commandType == LSTinderDeleteOK) {
         pthread_mutex_unlock(&semaforLlista);
         SERVER_sendResponse(client, SERVER_OK_DISCONNECTION_ID);
         write(1, aux, strlen(aux));
         close(client.fdClient);
         return 1;
       } else {
+
         pthread_mutex_unlock(&semaforLlista);
         SERVER_sendResponse(client, SERVER_KO_DISCONNECTION_ID);
-        return 0;
+        return 1;
       }
       break;
 
-      default:
-        break;
+    case MortyNext:
+
+      pthread_mutex_lock(&semaforLlistaMortys);
+      LLISTA_vesInici(&llistaMortys);
+      pthread_mutex_unlock(&semaforLlistaMortys);
+
+      pthread_mutex_lock(&semaforLlistaMortys);
+      while ((i < *(quants)) && !LLISTA_fi(llistaMortys)) {
+
+        LLISTA_avanca(&llistaMortys);
+        i++;
+      }
+      pthread_mutex_unlock(&semaforLlistaMortys);
+
+      pthread_mutex_lock(&semaforLlistaMortys);
+      if (LLISTA_fi(llistaMortys)) {
+
+        pthread_mutex_unlock(&semaforLlistaMortys);
+        *(quants) = 0;
+        COMMAND_create(command);
+        COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
+        COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT_NO);
+        write(client.fdClient, command, COMMAND_SIZE);
+      }
+      else {
+
+        pthread_mutex_unlock(&semaforLlistaMortys);
+        pthread_mutex_lock(&semaforLlistaMortys);
+        clientAux = LLISTA_consulta(llistaMortys);
+        pthread_mutex_unlock(&semaforLlistaMortys);
+
+        if (!strcmp(clientAux.nickName, client.nickName)) {
+
+          pthread_mutex_lock(&semaforLlistaMortys);
+          LLISTA_avanca(&llistaMortys);
+          pthread_mutex_unlock(&semaforLlistaMortys);
+
+          *quants = *quants + 1;
+        }
+
+        if (LLISTA_fi(llistaMortys)) {
+          *(quants) = 0;
+          COMMAND_create(command);
+          COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
+          COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT_NO);
+          write(client.fdClient, command, COMMAND_SIZE);
+        } else {
+
+          pthread_mutex_lock(&semaforLlistaMortys);
+          clientAux = LLISTA_consulta(llistaMortys);
+          pthread_mutex_unlock(&semaforLlistaMortys);
+
+          sprintf(age, "%d", clientAux.info.age);
+          COMMAND_create(command);
+          COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
+          COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT);
+          COMMAND_setData(command, clientAux.info.name, 15);
+          COMMAND_setData(command, clientAux.nickName, 25);
+          COMMAND_setData(command, age, 40);
+          COMMAND_setData(command, clientAux.info.description, 42);
+          write(client.fdClient, command, COMMAND_SIZE);
+          *quants = *quants + 1;
+        }
+      }
+      break;
+
+    case MortyLike:
+
+      sprintf(aux, "Morty %s like Morty %s\n", COMMAND_getData(command, 15, 29), COMMAND_getData(command, 30, 44));
+      write(1, aux, strlen(aux));
+
+      write(conf.clientSocketFD, command, COMMAND_SIZE);
+      break;
+
+    default:
+      break;
   }
 
   return 0;

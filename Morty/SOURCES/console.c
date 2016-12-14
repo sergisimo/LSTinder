@@ -37,8 +37,8 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
   int END = 0, correcte = 1;
 
   if (!CONSOLE_compareStrings(command, CONSOLE_SEARCH)) {
+
     char promptN[50];
-    write(1, CONSOLE_SEARCH_RESPONSE, strlen(CONSOLE_SEARCH_RESPONSE));
 
     enviaNovaPeticio(commanda, socket);
 
@@ -64,18 +64,18 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
                sprintf(promptN, "\n%s >> ", configuration.userName);
                write(1, promptN, strlen(promptN));
                contesta = IO_readKeyboard();
-               correcte = 1;
-               if (strcmp(contesta, "END")){
+               correcte = 0;
+               if (!strcmp(contesta, "END")){
                  END = 1;
                } else {
-                 if (strcmp(contesta, "YES")){
+                 if (!strcmp(contesta, "YES")){
                     enviaLike(configuration, usuaris, commanda, socket);
                     enviaNovaPeticio(commanda, socket);
                  } else {
-                   if (strcmp(contesta, "NO")){
+                   if (!strcmp(contesta, "NO")){
                       enviaNovaPeticio(commanda, socket);
                    } else {
-                      correcte = 0;
+                      correcte = 1;
                       write(1, "\nIntrodueix: YES/NO/END\n", strlen("\nIntrodueix: YES/NO/END\n"));
                    }
                  }

@@ -45,6 +45,6 @@
 
 	int SERVER_handleConnex(Command command, Client * client);
 
-	int SERVER_handleRequest(Command command, Client client);
+	int SERVER_handleRequest(Command command, Client client, int * quants);
 
 #endif

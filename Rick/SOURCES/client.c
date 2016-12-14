@@ -8,13 +8,76 @@
 ******************************************************************** */
 #include "../HEADERS/client.h"
 
+void* CLIENT_updateThread(void * segonsPointer) {
+
+  int segons = *((int *) segonsPointer);
+
+  sleep(10);
+  CLIENT_updateList();
+
+  while (1) {
+
+    sleep(segons);
+    CLIENT_updateList();
+  }
+}
+
+void CLIENT_updateList() {
+
+  Command command;
+  CommandType commandType;
+  char aux[50];
+  int final = 0, total = 0;
+  Client client;
+
+  COMMAND_create(command);
+  COMMAND_setType(command, COMMAND_TYPE_LSTINDER_USER_SEND);
+  COMMAND_setInfo(command, COMMAND_INFO_LSTINDER_USER);
+
+  pthread_mutex_lock(&semaforLlistaMortys);
+  LLISTA_destrueix(&llistaMortys);
+  llistaMortys = LLISTA_crea();
+  pthread_mutex_unlock(&semaforLlistaMortys);
+
+  write(1, CLIENT_SAVING_INFORMATION_MESSAGE, strlen(CLIENT_SAVING_INFORMATION_MESSAGE));
+  write(conf.clientSocketFD, command, COMMAND_SIZE);
+
+  while (!final) {
+
+    read(conf.clientSocketFD, command, COMMAND_SIZE);
+    commandType = COMMAND_getType(command);
+
+    if (commandType == LSTinderUser) {
+
+      client.info.name = COMMAND_getData(command, 15, 24);
+      client.nickName = COMMAND_getData(command, 25, 39);
+      client.info.age = atoi(COMMAND_getData(command, 40, 41));
+      client.info.description = COMMAND_getData(command, 42, 114);
+      total++;
+
+      sprintf(aux, "Morty: %s\n", client.nickName);
+      write(1, aux, strlen(aux));
+
+      pthread_mutex_lock(&semaforLlistaMortys);
+      LLISTA_insereix(&llistaMortys, client);
+      pthread_mutex_unlock(&semaforLlistaMortys);
+    } else {
+
+      final = 1;
+      if (!total) write(1, CLIENT_NO_MORTY_AVIABLE, strlen(CLIENT_NO_MORTY_AVIABLE));
+    }
+  }
+}
+
 void CLIENT_connect (Configuration * configuration) {
 
   Command command;
   CommandType commandType;
+  pthread_t threadAux;
 
   COMMAND_create(command);
   COMMAND_setType(command, CLIENT_CONNECTION_REQUEST);
+  llistaMortys = LLISTA_crea();
 
   configuration->clientSocketFD = socket(AF_INET, SOCK_STREAM, 0);
   if (configuration->clientSocketFD < 0) {
@@ -33,6 +96,7 @@ void CLIENT_connect (Configuration * configuration) {
       if (commandType == LSTinderConnectionOK) {
 
         write (1, CLIENT_OK_CONNECTION_MESSAGE, strlen(CLIENT_OK_CONNECTION_MESSAGE));
+        pthread_create(&(threadAux), NULL, CLIENT_updateThread, &conf.mortyRefresh);
       }
 
       if (commandType == LSTinderConnectionKO) {

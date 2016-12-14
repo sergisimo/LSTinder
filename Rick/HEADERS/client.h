@@ -23,7 +23,14 @@
   #define CLIENT_OK_CONNECTION_MESSAGE "Rick >> Connexio amb LsTinder establerta correctament.\n\n"
   #define CLIENT_KO_CONNECTION_MESSAGE "Rick >> No s'ha pogut connectar amb el servidor LSTinder!\n\n"
 
+  #define CLIENT_SAVING_INFORMATION_MESSAGE "Rick >> Guardant informació Mortys.\n\n"
+  #define CLIENT_NO_MORTY_AVIABLE "No hi ha cap Morty a la xarxa!\n\n"
+
   /**** CAPÇALERES ****/
+  void* CLIENT_updateThread(void * aux);
+
+  void CLIENT_updateList();
+
   void CLIENT_connect(Configuration * configuration);
 
 #endif

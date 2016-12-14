@@ -9,6 +9,7 @@
 #include "../HEADERS/signals.h"
 
 pthread_mutex_t semaforLlista = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t semaforLlistaMortys = PTHREAD_MUTEX_INITIALIZER;
 
 void SIGNALS_initializeSignals() {
 
@@ -32,6 +33,10 @@ void SINGNALS_programExit (int exitStatus, char * message) {
     LLISTA_destrueix(&llistaClients);
     pthread_mutex_unlock(&semaforLlista);
     pthread_mutex_destroy(&semaforLlista);
+    pthread_mutex_lock(&semaforLlistaMortys);
+    LLISTA_destrueix(&llistaMortys);
+    pthread_mutex_unlock(&semaforLlistaMortys);
+    pthread_mutex_destroy(&semaforLlistaMortys);
   }
 
   close(conf.serverSockedFD);

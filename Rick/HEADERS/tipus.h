@@ -107,6 +107,7 @@
 
 	//Variables globals
 	Llista llistaClients;
+	Llista llistaMortys;
 	Configuration conf;
 
 #endif

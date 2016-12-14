@@ -19,6 +19,7 @@
 	#define SIGNALS_BIND_ERROR "Error al crear el bind!\n"
 
 	extern pthread_mutex_t semaforLlista;
+	extern pthread_mutex_t semaforLlistaMortys;
 
   //Capçaleres
 	/* **********************************************
