@@ -33,8 +33,8 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
   char * contesta;
   CommandType commandType;
   CommandInfo commandInfo;
-  char * * usuaris;
-  int END = 0, correcte = 1, i = 0, first = 1;
+  char * usuaris;
+  int END = 0, correcte = 1;
 
   if (!CONSOLE_compareStrings(command, CONSOLE_SEARCH)) {
     char promptN[50];
@@ -48,12 +48,10 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
       commandType = COMMAND_getType(commanda);
       commandInfo = COMMAND_getInfo(commanda);
 
-      if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo && first) {
-         usuaris = (char**)malloc(sizeof(usuaris) * 1);
-         first = 0;
+      if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo) {
          if(usuaris){
-           usuaris[0] = (char*)malloc(sizeof (char) * 15);
-           usuaris[0] = COMMAND_getData(commanda, 25, 39);
+           usuaris = (char*)malloc(sizeof (char) * 15);
+           usuaris = COMMAND_getData(commanda, 25, 39);
            write(1, COMMAND_getData(commanda, 15, 24), strlen(COMMAND_getData(commanda, 15, 24)));
            write(1,"\n",1);
            write(1, COMMAND_getData(commanda, 25, 39), strlen(COMMAND_getData(commanda, 25, 39)));
@@ -61,7 +59,7 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
            write(1, COMMAND_getData(commanda, 40, 41), strlen(COMMAND_getData(commanda, 40, 41)));
            write(1,"\n",1);
            write(1, COMMAND_getData(commanda, 42, 114), strlen(COMMAND_getData(commanda, 42, 114)));
-           write(1, "\nLike? (Si/No/END)\n", strlen("\nLike? (YES/NO/END)\n"));
+           write(1, "\nLike? (YES/NO/END)\n", strlen("\nLike? (YES/NO/END)\n"));
            do {
                sprintf(promptN, "\n%s >> ", configuration.userName);
                write(1, promptN, strlen(promptN));
@@ -71,60 +69,26 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
                  END = 1;
                } else {
                  if (strcmp(contesta, "YES")){
-                    enviaLike(configuration, COMMAND_getData(commanda, 25, 39), commanda, socket);
+                    enviaLike(configuration, usuaris, commanda, socket);
                     enviaNovaPeticio(commanda, socket);
                  } else {
                    if (strcmp(contesta, "NO")){
                       enviaNovaPeticio(commanda, socket);
                    } else {
                       correcte = 0;
-                      write(1, "\nIntrodueix: Si/No/END\n", strlen("\nIntrodueix: Si/No/END\n"));
+                      write(1, "\nIntrodueix: YES/NO/END\n", strlen("\nIntrodueix: YES/NO/END\n"));
                    }
                  }
                }
              }while(correcte);
+             free(usuaris);
           } else {
               write(1, "Error demanant memoria!", strlen("Error demanant memoria!"));
           }
       } else {
-           if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo && !first) {
-              usuaris = (char**)realloc(usuaris, sizeof(usuaris)*1);
-              if(usuaris){
-                i++;
-                usuaris[i] = (char *)malloc(sizeof (char)* 15);
-                usuaris[i] = COMMAND_getData(commanda, 25, 39);
-                write(1, COMMAND_getData(commanda, 15, 24), strlen(COMMAND_getData(commanda, 15, 24)));
-                write(1,"\n",1);
-                write(1, COMMAND_getData(commanda, 25, 39), strlen(COMMAND_getData(commanda, 25, 39)));
-                write(1,"\n",1);
-                write(1, COMMAND_getData(commanda, 40, 41), strlen(COMMAND_getData(commanda, 40, 41)));
-                write(1,"\n",1);
-                write(1, COMMAND_getData(commanda, 42, 114), strlen(COMMAND_getData(commanda, 42, 114)));
-                write(1, "\nLike? (Si/No/END)\n", strlen("\nLike? (YES/NO/END)\n"));
-                do {
-                    sprintf(promptN, "\n%s >> ", configuration.userName);
-                    write(1, promptN, strlen(promptN));
-                    contesta = IO_readKeyboard();
-                    correcte = 1;
-                    if (strcmp(contesta, "END")){
-                      END = 1;
-                    } else {
-                      if (strcmp(contesta, "YES")){
-                         enviaLike(configuration, COMMAND_getData(commanda, 25, 39), commanda, socket);
-                         enviaNovaPeticio(commanda, socket);
-                      } else {
-                        if (strcmp(contesta, "NO")){
-                           enviaNovaPeticio(commanda, socket);
-                        } else {
-                           correcte = 0;
-                           write(1, "\nIntrodueix: Si/No/END\n", strlen("\nIntrodueix: Si/No/END\n"));
-                        }
-                      }
-                    }
-                  }while(correcte);
-               } else {
-                   write(1, "Error demanant memoria!", strlen("Error demanant memoria!"));
-               }
+           if (commandType == RickNewMorty && commandInfo == RickNoMorty) {
+             write(1, "\nNo hi ha més Mortys\n", strlen("\nNo hi ha més Mortys\n"));
+             END = 1;
             } else {
                 write(1, "\nError en la comunicació amb el servidor!\n", strlen("\nError en la comunicació amb el servidor!\n"));
             }
