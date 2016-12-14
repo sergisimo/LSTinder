@@ -92,7 +92,6 @@ CommandInfo COMMAND_getInfo(Command command) {
   else if (!strcmp(info, COMMAND_INFO_RICK_DISCONNECTION_OK)) commandInfo = RickDisconnectionOK;
   else if (!strcmp(info, COMMAND_INFO_RICK_DISCONNECTION_KO)) commandInfo = RickDisconnectionKO;
   else if (!strcmp(info, COMMAND_INFO_RICK_NEXT)) commandInfo = RickNewMortyInfo;
-  else if (!strcmp(info, "NO_MORTY")) commandInfo = RickNoMorty;
   else if (!strcmp(info, COMMAND_INFO_RICK_LIKE)) commandInfo = RickLikeInfo;
   else if (!strcmp(info, COMMAND_INFO_MORTY_XAT_EXIT)) commandInfo = MortyXatExit;
 
@@ -135,8 +134,10 @@ char * COMMAND_getData(Command command, int start, int final) {
     destination[j] = '\0';
   }
 
-  destination = realloc(destination, sizeof(char)*strlen(destination));
-  if (destination == NULL) SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR);
+  if (strlen(destination) != 0 ) {
+    destination = realloc(destination, sizeof(char)*strlen(destination));
+    if (destination == NULL) SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR);
+  }
 
   return destination;
 }

@@ -130,6 +130,7 @@ char * COMMAND_getData(Command command, int start, int final) {
 
   if (destination == NULL) SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR); //Control d'errors
   else {
+
     for (i = start; i <= final && command[i] != '\0'; i++) {
 
       destination[j] = command[i];
@@ -139,8 +140,10 @@ char * COMMAND_getData(Command command, int start, int final) {
     destination[j] = '\0';
   }
 
-  destination = realloc(destination, sizeof(char)*strlen(destination));
-  if (destination == NULL) SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR);
+  if (strlen(destination) != 0) {
+    destination = realloc(destination, sizeof(char)*strlen(destination));
+    if (destination == NULL) SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR);
+  }
 
   return destination;
 }

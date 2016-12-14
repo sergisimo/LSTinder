@@ -65,14 +65,14 @@ int CONSOLE_handleCommand (char * command, Configuration configuration, int sock
                write(1, promptN, strlen(promptN));
                contesta = IO_readKeyboard();
                correcte = 0;
-               if (!strcmp(contesta, "END")){
+               if (!CONSOLE_compareStrings(contesta, "END")){
                  END = 1;
                } else {
-                 if (!strcmp(contesta, "YES")){
+                 if (!CONSOLE_compareStrings(contesta, "YES")){
                     enviaLike(configuration, usuaris, commanda, socket);
                     enviaNovaPeticio(commanda, socket);
                  } else {
-                   if (!strcmp(contesta, "NO")){
+                   if (!CONSOLE_compareStrings(contesta, "NO")){
                       enviaNovaPeticio(commanda, socket);
                    } else {
                       correcte = 1;
