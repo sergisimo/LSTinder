@@ -40,7 +40,7 @@
 	 * @Ret : void
 	 *
 	 ************************************************/
-	void SINGNALS_handleSignals(int signal);
+	void SIGNALS_handleSignals(int signal);
 
 	/* **********************************************
 	 *

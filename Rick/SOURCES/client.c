@@ -11,14 +11,21 @@
 void* CLIENT_updateThread(void * segonsPointer) {
 
   int segons = *((int *) segonsPointer);
+  update = 0;
 
-  sleep(10);
+  alarm(10);
+
+  while (!update) pause();
   CLIENT_updateList();
+  update = 0;
+  alarm(segons);
 
   while (1) {
 
-    sleep(segons);
+    while(!update) pause();
     CLIENT_updateList();
+    update = 0;
+    alarm(segons);
   }
 }
 
@@ -73,7 +80,6 @@ void CLIENT_connect (Configuration * configuration) {
 
   Command command;
   CommandType commandType;
-  pthread_t threadAux;
 
   COMMAND_create(command);
   COMMAND_setType(command, CLIENT_CONNECTION_REQUEST);
@@ -96,7 +102,7 @@ void CLIENT_connect (Configuration * configuration) {
       if (commandType == LSTinderConnectionOK) {
 
         write (1, CLIENT_OK_CONNECTION_MESSAGE, strlen(CLIENT_OK_CONNECTION_MESSAGE));
-        pthread_create(&(threadAux), NULL, CLIENT_updateThread, &conf.mortyRefresh);
+        pthread_create(&(threadUpdate), NULL, CLIENT_updateThread, &conf.mortyRefresh);
       }
 
       if (commandType == LSTinderConnectionKO) {

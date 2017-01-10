@@ -2,7 +2,7 @@ all: Rick
 
 H=./HEADERS/
 S=./SOURCES/
-OBJ=main.o io.o server.o llista.o signals.o client.o command.o
+OBJ=main.o io.o server.o llista.o signals.o client.o command.o seenList.o
 FLAGS=-Wall -Wextra -lpthread
 
 main.o: $Smain.c $Hclient.h $Hserver.h
@@ -11,7 +11,7 @@ main.o: $Smain.c $Hclient.h $Hserver.h
 io.o: $Sio.c $Hsignals.h
 	gcc $Sio.c -c $(FLAGS)
 
-server.o: $Sserver.c $Hllista.h $Hio.h $Hcommand.h
+server.o: $Sserver.c $Hllista.h $HseenList.h $Hio.h $Hcommand.h
 	gcc $Sserver.c -c $(FLAGS)
 
 llista.o: $Sllista.c $Hsignals.h
@@ -25,6 +25,9 @@ client.o: $Sclient.c $Hcommand.h $Hsignals.h
 
 command.o: $Scommand.c $Hsignals.h
 	gcc $Scommand.c -c $(FLAGS)
+
+seenList.o: $SseenList.c $Htipus.h
+	gcc $SseenList.c -c $(FLAGS)
 
 Rick: $(OBJ)
 	gcc $(OBJ) -o Rick $(FLAGS)

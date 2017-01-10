@@ -75,7 +75,7 @@
 		RickDisconnectionOK,
 		RickDisconnectionKO,
 		RickNewMortyInfo,
-		RickNoMorty,
+		RickNoMortyInfo,
 		RickLikeInfo,
 		MortyXatExit
 	} CommandInfo;

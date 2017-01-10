@@ -92,6 +92,7 @@ CommandInfo COMMAND_getInfo(Command command) {
   else if (!strcmp(info, COMMAND_INFO_RICK_DISCONNECTION_OK)) commandInfo = RickDisconnectionOK;
   else if (!strcmp(info, COMMAND_INFO_RICK_DISCONNECTION_KO)) commandInfo = RickDisconnectionKO;
   else if (!strcmp(info, COMMAND_INFO_RICK_NEXT)) commandInfo = RickNewMortyInfo;
+  else if (!strcmp(info, COMMAND_INFO_RICK_NEXT_NO)) commandInfo = RickNoMortyInfo;
   else if (!strcmp(info, COMMAND_INFO_RICK_LIKE)) commandInfo = RickLikeInfo;
   else if (!strcmp(info, COMMAND_INFO_MORTY_XAT_EXIT)) commandInfo = MortyXatExit;
 

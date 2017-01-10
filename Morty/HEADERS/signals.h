@@ -23,6 +23,7 @@
   #define SIGNALS_CLIENT_CONECTION_ERROR "[ERROR Usuari ja connectat]\n"
   #define SIGNALS_CLIENT_DISCONECTION_ERROR "\nError al desconnectar ja que el servidor es troba fora de servei. Disculpi per les molesties.\n\n"
   #define SIGNALS_EXIT_MESSAGE "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
+  #define SIGNALS_COMMUNICATION_ERROR "\nError en la comunicació amb el servidor!\n"
 
   /**** CAPÇALERES ****/
   /* **********************************************

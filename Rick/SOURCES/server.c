@@ -32,7 +32,7 @@ void* SERVER_clientThread(void * clientPointer) {
   Client client = *((Client *)clientPointer);
   free(clientPointer);
 
-  int sortir = 0, status , quants = 0;
+  int sortir = 0, status;
 
   char aux[50];
 
@@ -44,7 +44,7 @@ void* SERVER_clientThread(void * clientPointer) {
 
     status = read(client.fdClient, command, COMMAND_SIZE);
 
-    if (status != 0) sortir = SERVER_handleRequest(command, client, &quants);
+    if (status != 0) sortir = SERVER_handleRequest(command, client);
     else {
 
       sprintf(aux, "Exiting %s\n", client.nickName);
@@ -86,6 +86,8 @@ void SERVER_listenClients(Configuration configuration) {
 
     read(client->fdClient, command, COMMAND_SIZE);
     connectionStatus = SERVER_handleConnex(command, client);
+
+    client->seenList = SEENLIST_crea();
 
     sprintf (aux, "Peticio new morty %s\n", client->nickName);
     write(1, aux, strlen(aux));
@@ -186,12 +188,12 @@ int SERVER_handleConnex(Command command, Client * client) {
   } else return 0;
 }
 
-int SERVER_handleRequest(Command command, Client client, int * quants) {
+int SERVER_handleRequest(Command command, Client client) {
 
   char aux[50];
   char fdSocket[10];
   char age[3];
-  int i = 0;
+  int sortir = 0;
   Client clientAux;
 
   CommandType commandType;
@@ -232,53 +234,14 @@ int SERVER_handleRequest(Command command, Client client, int * quants) {
 
       pthread_mutex_lock(&semaforLlistaMortys);
       LLISTA_vesInici(&llistaMortys);
-      pthread_mutex_unlock(&semaforLlistaMortys);
 
-      pthread_mutex_lock(&semaforLlistaMortys);
-      while ((i < *(quants)) && !LLISTA_fi(llistaMortys)) {
+      while (!LLISTA_fi(llistaMortys) && !sortir) {
 
-        LLISTA_avanca(&llistaMortys);
-        i++;
-      }
-      pthread_mutex_unlock(&semaforLlistaMortys);
+        if((!SEENLIST_busca(client.seenList, LLISTA_consulta(llistaMortys).nickName)) && strcmp(LLISTA_consulta(llistaMortys).nickName, client.nickName)) {
 
-      pthread_mutex_lock(&semaforLlistaMortys);
-      if (LLISTA_fi(llistaMortys)) {
-
-        pthread_mutex_unlock(&semaforLlistaMortys);
-        *(quants) = 0;
-        COMMAND_create(command);
-        COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
-        COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT_NO);
-        write(client.fdClient, command, COMMAND_SIZE);
-      }
-      else {
-
-        pthread_mutex_unlock(&semaforLlistaMortys);
-        pthread_mutex_lock(&semaforLlistaMortys);
-        clientAux = LLISTA_consulta(llistaMortys);
-        pthread_mutex_unlock(&semaforLlistaMortys);
-
-        if (!strcmp(clientAux.nickName, client.nickName)) {
-
-          pthread_mutex_lock(&semaforLlistaMortys);
-          LLISTA_avanca(&llistaMortys);
-          pthread_mutex_unlock(&semaforLlistaMortys);
-
-          *quants = *quants + 1;
-        }
-
-        if (LLISTA_fi(llistaMortys)) {
-          *(quants) = 0;
-          COMMAND_create(command);
-          COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
-          COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT_NO);
-          write(client.fdClient, command, COMMAND_SIZE);
-        } else {
-
-          pthread_mutex_lock(&semaforLlistaMortys);
           clientAux = LLISTA_consulta(llistaMortys);
-          pthread_mutex_unlock(&semaforLlistaMortys);
+
+          SEENLIST_insereix(&client.seenList, clientAux.nickName);
 
           sprintf(age, "%d", clientAux.info.age);
           COMMAND_create(command);
@@ -289,9 +252,21 @@ int SERVER_handleRequest(Command command, Client client, int * quants) {
           COMMAND_setData(command, age, 40);
           COMMAND_setData(command, clientAux.info.description, 42);
           write(client.fdClient, command, COMMAND_SIZE);
-          *quants = *quants + 1;
+          sortir = 1;
+        } else {
+          LLISTA_avanca(&llistaMortys);
         }
       }
+
+      if (LLISTA_fi(llistaMortys)) {
+
+        COMMAND_create(command);
+        COMMAND_setType(command, COMMAND_TYPE_MORTY_NEXT);
+        COMMAND_setInfo(command, COMMAND_INFO_MORTY_NEXT_NO);
+        write(client.fdClient, command, COMMAND_SIZE);
+      }
+      pthread_mutex_unlock(&semaforLlistaMortys);
+
       break;
 
     case MortyLike:

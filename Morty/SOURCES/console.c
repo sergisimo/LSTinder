@@ -8,94 +8,10 @@
 ******************************************************************** */
 #include "../HEADERS/console.h"
 
-void enviaLike(Configuration configuration, char * nom, Command commanda, int socket){
-  //ENVIAMENT
-  COMMAND_create(commanda);
-  COMMAND_setType(commanda, COMMAND_TYPE_RICK_LIKE);
-  COMMAND_setInfo(commanda, COMMAND_INFO_RICK_LIKE);
-  COMMAND_setData(commanda, configuration.userName, 15);
-  COMMAND_setData(commanda, nom, 30);
-
-  write(socket, commanda, COMMAND_SIZE);
-}
-void enviaNovaPeticio(Command commanda, int socket){
-  //ENVIAMENT
-  COMMAND_create(commanda);
-  COMMAND_setType(commanda, COMMAND_TYPE_RICK_NEXT);
-  COMMAND_setInfo(commanda, COMMAND_INFO_RICK_NEXT);
-
-  write(socket, commanda, COMMAND_SIZE);
-}
-
 int CONSOLE_handleCommand (char * command, Configuration configuration, int socket) {
 
-  Command commanda;
-  char * contesta;
-  CommandType commandType;
-  CommandInfo commandInfo;
-  char * usuaris;
-  int END = 0, correcte = 1;
-
   if (!CONSOLE_compareStrings(command, CONSOLE_SEARCH)) {
-
-    char promptN[50];
-
-    enviaNovaPeticio(commanda, socket);
-
-    do{
-      //RESPOSTA
-      read(socket, commanda, COMMAND_SIZE);
-      commandType = COMMAND_getType(commanda);
-      commandInfo = COMMAND_getInfo(commanda);
-
-      if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo) {
-         if(usuaris){
-           usuaris = (char*)malloc(sizeof (char) * 15);
-           usuaris = COMMAND_getData(commanda, 25, 39);
-           write(1, COMMAND_getData(commanda, 15, 24), strlen(COMMAND_getData(commanda, 15, 24)));
-           write(1,"\n",1);
-           write(1, COMMAND_getData(commanda, 25, 39), strlen(COMMAND_getData(commanda, 25, 39)));
-           write(1,"\n",1);
-           write(1, COMMAND_getData(commanda, 40, 41), strlen(COMMAND_getData(commanda, 40, 41)));
-           write(1,"\n",1);
-           write(1, COMMAND_getData(commanda, 42, 114), strlen(COMMAND_getData(commanda, 42, 114)));
-           write(1, "\nLike? (YES/NO/END)\n", strlen("\nLike? (YES/NO/END)\n"));
-           do {
-               sprintf(promptN, "\n%s >> ", configuration.userName);
-               write(1, promptN, strlen(promptN));
-               contesta = IO_readKeyboard();
-               correcte = 0;
-               if (!CONSOLE_compareStrings(contesta, "END")){
-                 END = 1;
-               } else {
-                 if (!CONSOLE_compareStrings(contesta, "YES")){
-                    enviaLike(configuration, usuaris, commanda, socket);
-                    enviaNovaPeticio(commanda, socket);
-                 } else {
-                   if (!CONSOLE_compareStrings(contesta, "NO")){
-                      enviaNovaPeticio(commanda, socket);
-                   } else {
-                      correcte = 1;
-                      write(1, "\nIntrodueix: YES/NO/END\n", strlen("\nIntrodueix: YES/NO/END\n"));
-                   }
-                 }
-               }
-             }while(correcte);
-             free(usuaris);
-          } else {
-              write(1, "Error demanant memoria!", strlen("Error demanant memoria!"));
-          }
-      } else {
-           if (commandType == RickNewMorty && commandInfo == RickNoMorty) {
-             write(1, "\nNo hi ha més Mortys\n", strlen("\nNo hi ha més Mortys\n"));
-             END = 1;
-            } else {
-                write(1, "\nError en la comunicació amb el servidor!\n", strlen("\nError en la comunicació amb el servidor!\n"));
-            }
-      }
-
-    }while(!END);
-
+    CONSOLE_search(socket);
     return 0;
   }
 
@@ -133,6 +49,93 @@ void CONSOLE_handleSystemCommand (char * command) {
 
   free(command);
   free(commandSplited);
+}
+
+void CONSOLE_search(int socket) {
+
+  Command commanda;
+  char * contesta;
+  CommandType commandType;
+  CommandInfo commandInfo;
+  char * usuaris;
+  int END = 0, correcte = 1;
+  char promptN[50];
+
+  CONSOLE_enviaNovaPeticio(commanda, socket);
+
+  do{
+    //RESPOSTA
+    read(socket, commanda, COMMAND_SIZE);
+    commandType = COMMAND_getType(commanda);
+    commandInfo = COMMAND_getInfo(commanda);
+
+    if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo) {
+       if(usuaris){
+         usuaris = (char*)malloc(sizeof (char) * 15);
+         usuaris = COMMAND_getData(commanda, 25, 39);
+         write(1, COMMAND_getData(commanda, 15, 24), strlen(COMMAND_getData(commanda, 15, 24)));
+         write(1,"\n",1);
+         write(1, COMMAND_getData(commanda, 25, 39), strlen(COMMAND_getData(commanda, 25, 39)));
+         write(1,"\n",1);
+         write(1, COMMAND_getData(commanda, 40, 41), strlen(COMMAND_getData(commanda, 40, 41)));
+         write(1,"\n",1);
+         write(1, COMMAND_getData(commanda, 42, 114), strlen(COMMAND_getData(commanda, 42, 114)));
+         write(1, CONSOLE_LIKE_PROMPT, strlen(CONSOLE_LIKE_PROMPT));
+         do {
+             sprintf(promptN, "\n%s >> ", configuration.userName);
+             write(1, promptN, strlen(promptN));
+             contesta = IO_readKeyboard();
+             correcte = 0;
+             if (!CONSOLE_compareStrings(contesta, CONSOLE_END)){
+               END = 1;
+             } else {
+               if (!CONSOLE_compareStrings(contesta, CONSOLE_YES)){
+                  CONSOLE_enviaLike(configuration, usuaris, commanda, socket);
+                  CONSOLE_enviaNovaPeticio(commanda, socket);
+               } else {
+                 if (!CONSOLE_compareStrings(contesta, CONSOLE_NO)){
+                    CONSOLE_enviaNovaPeticio(commanda, socket);
+                 } else {
+                    correcte = 1;
+                    write(1, CONSOLE_LIKE_PROMPT_ALERT, strlen(CONSOLE_LIKE_PROMPT_ALERT));
+                 }
+               }
+             }
+           }while(correcte);
+           free(usuaris);
+        } else {
+            SINGNALS_programExit(-1, SIGNALS_MEMORY_ERROR);
+        }
+    } else {
+         if (commandType == RickNewMorty && commandInfo == RickNoMortyInfo) {
+           write(1, CONSOLE_NO_NEXT, strlen(CONSOLE_NO_NEXT));
+           END = 1;
+          } else {
+              SINGNALS_programExit(-1, SIGNALS_COMMUNICATION_ERROR);
+          }
+    }
+
+  }while(!END);
+}
+
+void CONSOLE_enviaLike(Configuration configuration, char * nom, Command commanda, int socket){
+  //ENVIAMENT
+  COMMAND_create(commanda);
+  COMMAND_setType(commanda, COMMAND_TYPE_RICK_LIKE);
+  COMMAND_setInfo(commanda, COMMAND_INFO_RICK_LIKE);
+  COMMAND_setData(commanda, configuration.userName, 15);
+  COMMAND_setData(commanda, nom, 30);
+
+  write(socket, commanda, COMMAND_SIZE);
+}
+
+void CONSOLE_enviaNovaPeticio(Command commanda, int socket){
+  //ENVIAMENT
+  COMMAND_create(commanda);
+  COMMAND_setType(commanda, COMMAND_TYPE_RICK_NEXT);
+  COMMAND_setInfo(commanda, COMMAND_INFO_RICK_NEXT);
+
+  write(socket, commanda, COMMAND_SIZE);
 }
 
 char ** CONSOLE_split(char * command, char splitChar, int * size) {

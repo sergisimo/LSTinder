@@ -25,6 +25,21 @@
 
 	//Tipus Propis
 	/*
+	*	Tipus per la llista dels vistos.
+	*/
+	typedef struct _node_ {
+
+		char * name;
+		struct _node_ * seg;
+	} NodeSeen;
+
+	typedef struct {
+
+		NodeSeen * pri;
+		NodeSeen * ant;
+	} SeenList;
+
+	/*
 	* Tipus propi que permet guardar les caràcteristiques del fitxer rick.cfg.
 	*/
   typedef struct {
@@ -50,6 +65,7 @@
 
 		char * nickName;
 		Information info;
+		SeenList seenList;
 		int fdClient;
 		struct sockaddr_in clientSocket;
 	} Client;
@@ -91,23 +107,25 @@
 	}CommandInfo;
 
 	/*
-	*	Tipus pròpis necessaris per implementar una llista.
+	*	Tipus per la llista dels clients.
 	*/
 	typedef struct _node {
 
-  	Client e;
-  	struct _node * seg;
-  } Node;
+		Client e;
+		struct _node * seg;
+	} Node;
 
-  typedef struct {
+	typedef struct {
 
-  	Node * pri;
-  	Node * ant;
-  } Llista;
+		Node * pri;
+		Node * ant;
+	} Llista;
 
 	//Variables globals
 	Llista llistaClients;
 	Llista llistaMortys;
 	Configuration conf;
+	int update;
+	pthread_t threadUpdate;
 
 #endif

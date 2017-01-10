@@ -18,10 +18,16 @@
   /**** CONSTANTS ****/
   #define CONSOLE_SEARCH  "search"
   #define CONSOLE_EXIT    "exit"
+  #define CONSOLE_YES    "yes"
+  #define CONSOLE_NO    "no"
+  #define CONSOLE_END    "end"
   #define CONSOLE_SEARCH_RESPONSE    "\nComanda identificada!\n"
   #define CONSOLE_EXIT_RESPONSE    "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
   #define CONSOLE_NOT_FOUND_COMMAND    "Comanda inexistent!\n"
   #define CONSOLE_MEMORY_ALLOCATION_ERROR    "\nNo s'ha pogut reservar suficient espaic de memòria. Abortant de forma segura...\n\n"
+  #define CONSOLE_LIKE_PROMPT "\nLike? (YES/NO/END)\n"
+  #define CONSOLE_LIKE_PROMPT_ALERT "\nIntrodueix: YES/NO/END\n"
+  #define CONSOLE_NO_NEXT "\nNo hi ha més Mortys\n"
 
   /**** CAPÇALERES ****/
 
@@ -45,6 +51,12 @@
    *
    ************************************************/
   void CONSOLE_handleSystemCommand (char * command);
+
+  void CONSOLE_search(int socket);
+
+  void CONSOLE_enviaLike(Configuration configuration, char * nom, Command commanda, int socket);
+
+  void CONSOLE_enviaNovaPeticio(Command commanda, int socket);
 
   /* **********************************************
    *

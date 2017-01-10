@@ -13,15 +13,26 @@ pthread_mutex_t semaforLlistaMortys = PTHREAD_MUTEX_INITIALIZER;
 
 void SIGNALS_initializeSignals() {
 
-  signal(SIGINT, SINGNALS_handleSignals);
+  signal(SIGINT, SIGNALS_handleSignals);
+  signal(SIGALRM, SIGNALS_handleSignals);
+  signal(SIGUSR1, SIGNALS_handleSignals);
 }
 
-void SINGNALS_handleSignals(int signal) {
+void SIGNALS_handleSignals(int signal) {
 
   switch (signal) {
     case SIGINT:
 
       SINGNALS_programExit(-1, SIGNALS_SIGCONT_MESSAGE);
+      break;
+
+    case SIGALRM:
+
+      update = 1;
+      pthread_kill(threadUpdate, SIGUSR1);
+      break;
+
+    default:
       break;
   }
 }

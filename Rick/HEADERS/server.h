@@ -11,6 +11,7 @@
 
   //Llibreries pròpies
   #include "llista.h"
+	#include "seenList.h"
 	#include "io.h"
 	#include "command.h"
 
@@ -45,6 +46,6 @@
 
 	int SERVER_handleConnex(Command command, Client * client);
 
-	int SERVER_handleRequest(Command command, Client client, int * quants);
+	int SERVER_handleRequest(Command command, Client client);
 
 #endif
