@@ -168,7 +168,6 @@ void* CLIENT_listenLSTinder (void* socket) {
       }
     } else {
 
-      printf("MATCH\n");
       int port = COMMAND_getPort(commandReaded);
       char * name1 = COMMAND_getData(commandReaded, 15, 29);
       char * name2 = COMMAND_getData(commandReaded, 30, 44);
