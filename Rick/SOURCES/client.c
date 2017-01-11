@@ -130,6 +130,7 @@ void* CLIENT_listenLSTinder (void* socket) {
   Client clientAux;
   CommandType commandType;
   int matchStatus = -1;
+  int sortir = 0;
 
   do {
 
@@ -148,19 +149,26 @@ void* CLIENT_listenLSTinder (void* socket) {
 
       if (commandType == LSTinderFiUser || commandType == LSTinderUser) pthread_kill(threadUpdate, SIGUSR1);
       if (commandType == LSTinderClientOK || commandType == LSTinderClientKO) kill(getpid(), SIGUSR1);
-      if (commandType == LSTinderDeleteOK|| commandType == LSTinderDeleteKO) {
+      if (commandType == LSTinderDeleteOK || commandType == LSTinderDeleteKO) {
         pthread_mutex_lock(&semaforLlista);
         LLISTA_vesInici(&llistaClients);
-        while (!LLISTA_fi(llistaClients)) {
+        sortir = 0;
+        while (!LLISTA_fi(llistaClients) && !sortir) {
 
           clientAux = LLISTA_consulta(llistaClients);
-          pthread_kill(clientAux.threadClient, SIGUSR1);
+
+          if (clientAux.fdClient == COMMAND_getPort(commandReaded)) {
+            pthread_kill(clientAux.threadClient, SIGUSR1);
+            sortir = 1;
+          }
+
           LLISTA_avanca(&llistaClients);
         }
         pthread_mutex_unlock(&semaforLlista);
       }
     } else {
 
+      printf("MATCH\n");
       int port = COMMAND_getPort(commandReaded);
       char * name1 = COMMAND_getData(commandReaded, 15, 29);
       char * name2 = COMMAND_getData(commandReaded, 30, 44);

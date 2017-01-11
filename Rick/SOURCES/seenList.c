@@ -33,7 +33,8 @@ int SEENLIST_insereix(SeenList * llista, char * name) {
   }
   else {
 
-    aux->name = name;
+    aux->name = (char *)malloc(sizeof(char)*strlen(name));
+    strcpy(aux->name, name);
     aux->seg = llista->ant->seg;
     llista->ant->seg = aux;
     return 1;
