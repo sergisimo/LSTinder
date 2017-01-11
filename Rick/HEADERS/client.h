@@ -14,6 +14,7 @@
   /**** LLIBRERIES PROPIES ****/
   #include "command.h"
   #include "signals.h"
+  #include "server.h"
 
 
   /**** CONSTANTS ****/
@@ -32,5 +33,9 @@
   void CLIENT_updateList();
 
   void CLIENT_connect(Configuration * configuration);
+
+  void* CLIENT_listenLSTinder (void* socket);
+
+  void CLIENT_waitForRead();
 
 #endif

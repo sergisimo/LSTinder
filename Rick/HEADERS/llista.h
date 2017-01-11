@@ -10,7 +10,7 @@
 	#define _LLISTA_H_
 
   //Llibreries pròpies
-  #include "tipus.h"
+	#include "seenList.h"
 
   //Constants
 

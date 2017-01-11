@@ -96,12 +96,14 @@ void SERVER_listenClients(Configuration configuration) {
 
       write(1, SERVER_CONNECTION_OK, strlen(SERVER_CONNECTION_OK));
 
+      SERVER_sendResponse(*client, SERVER_OK_CONNECTION_ID);
+      pthread_create(&(threadAux), NULL, SERVER_clientThread, client);
+
+      client->threadClient = threadAux;
+
       pthread_mutex_lock(&semaforLlista);
       LLISTA_insereix(&llistaClients, *client);
       pthread_mutex_unlock(&semaforLlista);
-
-      SERVER_sendResponse(*client, SERVER_OK_CONNECTION_ID);
-      pthread_create(&(threadAux), NULL, SERVER_clientThread, client);
     } else {
       SERVER_sendResponse(*client, SERVER_KO_CONNECTION_ID);
       write(1, SERVER_CONNECTION_KO, strlen(SERVER_CONNECTION_KO));
@@ -171,7 +173,7 @@ int SERVER_handleConnex(Command command, Client * client) {
     COMMAND_setData(command, client->info.description, 42);
 
     write(conf.clientSocketFD, command, COMMAND_SIZE);
-    read(conf.clientSocketFD, command, COMMAND_SIZE);
+    CLIENT_waitForRead(command);
 
     commandType = COMMAND_getType(command);
 
@@ -209,10 +211,10 @@ int SERVER_handleRequest(Command command, Client client) {
       COMMAND_setData(command, client.nickName, 15);
 
       write(conf.clientSocketFD, command, COMMAND_SIZE);
-      read(conf.clientSocketFD, command, COMMAND_SIZE);
+
+      CLIENT_waitForRead(command);
 
       commandType = COMMAND_getType(command);
-
       sprintf(aux, "Exiting %s\n", client.nickName);
 
       pthread_mutex_lock(&semaforLlista);
@@ -282,4 +284,92 @@ int SERVER_handleRequest(Command command, Client client) {
   }
 
   return 0;
+}
+
+void SERVER_sendMatch(int port, char * name1, char * name2, int * matchStatus) {
+
+  Command command;
+  Client clientAux;
+  char aux[10];
+  int sortir = 0;
+
+  COMMAND_create(command);
+  sprintf(aux, "%d", port);
+  COMMAND_setType(command, COMMAND_TYPE_LSTINDER_MATCH);
+  COMMAND_setInfo(command, aux);
+
+  switch(*matchStatus) {
+
+    case -1:
+      pthread_mutex_lock(&semaforLlista);
+      LLISTA_vesInici(&llistaClients);
+      while(!LLISTA_fi(llistaClients) && !sortir) {
+
+        clientAux = LLISTA_consulta(llistaClients);
+        if (!strcmp(clientAux.nickName, name1)) {
+
+          COMMAND_setData(command, name2, 15);
+          write(clientAux.fdClient, command, COMMAND_SIZE);
+          sortir = 1;
+          if (LLISTA_busca(llistaClients, name2)) *matchStatus = 1;
+        }
+        else LLISTA_avanca(&llistaClients);
+      }
+      pthread_mutex_unlock(&semaforLlista);
+
+      if (!sortir) {
+        pthread_mutex_lock(&semaforLlista);
+        LLISTA_vesInici(&llistaClients);
+        while(!LLISTA_fi(llistaClients) && !sortir) {
+
+          clientAux = LLISTA_consulta(llistaClients);
+          if (!strcmp(clientAux.nickName, name2)) {
+
+            COMMAND_setData(command, name1, 15);
+            write(clientAux.fdClient, command, COMMAND_SIZE);
+            sortir = 1;
+            *matchStatus = 2;
+          }
+          else LLISTA_avanca(&llistaClients);
+        }
+        pthread_mutex_unlock(&semaforLlista);
+      }
+      break;
+
+      case 1:
+        pthread_mutex_lock(&semaforLlista);
+        LLISTA_vesInici(&llistaClients);
+        while(!LLISTA_fi(llistaClients) && !sortir) {
+
+          clientAux = LLISTA_consulta(llistaClients);
+          if (!strcmp(clientAux.nickName, name2)) {
+
+            COMMAND_setData(command, name1, 15);
+            write(clientAux.fdClient, command, COMMAND_SIZE);
+            sortir = 1;
+            *matchStatus = -1;
+          }
+          else LLISTA_avanca(&llistaClients);
+        }
+        pthread_mutex_unlock(&semaforLlista);
+        break;
+
+      case 2:
+        pthread_mutex_lock(&semaforLlista);
+        LLISTA_vesInici(&llistaClients);
+        while(!LLISTA_fi(llistaClients) && !sortir) {
+
+          clientAux = LLISTA_consulta(llistaClients);
+          if (!strcmp(clientAux.nickName, name1)) {
+
+            COMMAND_setData(command, name1, 15);
+            write(clientAux.fdClient, command, COMMAND_SIZE);
+            sortir = 1;
+            *matchStatus = -1;
+          }
+          else LLISTA_avanca(&llistaClients);
+        }
+        pthread_mutex_unlock(&semaforLlista);
+        break;
+  }
 }

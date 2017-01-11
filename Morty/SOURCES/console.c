@@ -10,8 +10,20 @@
 
 int CONSOLE_handleCommand (char * command, Configuration configuration, int socket) {
 
+  char aux[20];
+
   if (!CONSOLE_compareStrings(command, CONSOLE_SEARCH)) {
     CONSOLE_search(socket);
+    return 0;
+  }
+
+  if (stopped) {
+
+    if (!reading) write(1, CONECTION_INITIALIZING_XAT, strlen(CONECTION_INITIALIZING_XAT));
+    sprintf(aux, "%s >> ", configuration.userName);
+    write(1, aux, strlen(aux));
+
+    while(stopped) pause();
     return 0;
   }
 
@@ -65,21 +77,21 @@ void CONSOLE_search(int socket) {
 
   do{
     //RESPOSTA
-    read(socket, commanda, COMMAND_SIZE);
-    commandType = COMMAND_getType(commanda);
-    commandInfo = COMMAND_getInfo(commanda);
+    CONNECTION_waitForRead();
+    commandType = COMMAND_getType(commandReaded);
+    commandInfo = COMMAND_getInfo(commandReaded);
 
     if (commandType == RickNewMorty && commandInfo == RickNewMortyInfo) {
        if(usuaris){
          usuaris = (char*)malloc(sizeof (char) * 15);
-         usuaris = COMMAND_getData(commanda, 25, 39);
-         write(1, COMMAND_getData(commanda, 15, 24), strlen(COMMAND_getData(commanda, 15, 24)));
+         usuaris = COMMAND_getData(commandReaded, 25, 39);
+         write(1, COMMAND_getData(commandReaded, 15, 24), strlen(COMMAND_getData(commandReaded, 15, 24)));
          write(1,"\n",1);
-         write(1, COMMAND_getData(commanda, 25, 39), strlen(COMMAND_getData(commanda, 25, 39)));
+         write(1, COMMAND_getData(commandReaded, 25, 39), strlen(COMMAND_getData(commandReaded, 25, 39)));
          write(1,"\n",1);
-         write(1, COMMAND_getData(commanda, 40, 41), strlen(COMMAND_getData(commanda, 40, 41)));
+         write(1, COMMAND_getData(commandReaded, 40, 41), strlen(COMMAND_getData(commandReaded, 40, 41)));
          write(1,"\n",1);
-         write(1, COMMAND_getData(commanda, 42, 114), strlen(COMMAND_getData(commanda, 42, 114)));
+         write(1, COMMAND_getData(commandReaded, 42, 114), strlen(COMMAND_getData(commandReaded, 42, 114)));
          write(1, CONSOLE_LIKE_PROMPT, strlen(CONSOLE_LIKE_PROMPT));
          do {
              sprintf(promptN, "\n%s >> ", configuration.userName);
@@ -215,6 +227,8 @@ void CONSOLE_start (Configuration configuration, int socket) {
 
   int sortir = 0;
 
+  stopped = 0;
+
   char * command;
   char prompt[50];
 
@@ -222,7 +236,10 @@ void CONSOLE_start (Configuration configuration, int socket) {
 
     sprintf(prompt, "\n%s >> ", configuration.userName);
     write(1, prompt, strlen(prompt));
+    reading = 1;
     command = IO_readKeyboard();
+    reading = 0;
+
     sortir = CONSOLE_handleCommand(command, configuration, socket);
   }
 

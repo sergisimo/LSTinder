@@ -26,6 +26,7 @@
 	#include <arpa/inet.h>
   #include <unistd.h>
   #include <fcntl.h>
+	#include <sys/shm.h>
 
 	//Tipus Propis
 	/*
@@ -36,6 +37,7 @@
 		char * addr;
     int sin_port;
 		int sock;
+		int xatFD;
 	} Configuration;
 
 	/*
@@ -46,6 +48,11 @@
 		int age;
 		char * description;
 	} Information;
+
+	typedef struct {
+		int fd;
+		int idMemComp;
+	} Xat;
 
 	/*
 	*	Tipus pròpis necessaris per implementar les comandes que s'utilitzaran per la comunicació client servidor.
@@ -82,5 +89,9 @@
 
 	Configuration configuration;
 	Information information;
+	Command commandReaded;
+	int waitRead;
+	int stopped;
+	int reading;
 
 #endif

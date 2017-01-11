@@ -70,6 +70,8 @@
 	 ************************************************/
 	void SEENLIST_destrueix (SeenList * llista);
 
+	int SEENLIST_isCreated(SeenList llista);
+
 	void SEENLIST_vesInici(SeenList * llista);
 
 	void SEENLIST_avanca(SeenList * llista);

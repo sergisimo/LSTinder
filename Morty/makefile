@@ -11,7 +11,7 @@ main.o: $Smain.c $Hconsole.h $Hconection.h
 console.o: $Sconsole.c $Hio.h $Hconection.h
 	gcc $Sconsole.c -c $(FLAGS)
 
-conection.o: $Sconection.c $Hcommand.h
+conection.o: $Sconection.c $Hcommand.h $Hio.h $Hconsole.h
 	gcc $Sconection.c -c $(FLAGS)
 
 io.o: $Sio.c $Hsignals.h

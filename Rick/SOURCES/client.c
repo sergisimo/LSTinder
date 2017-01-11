@@ -51,7 +51,8 @@ void CLIENT_updateList() {
 
   while (!final) {
 
-    read(conf.clientSocketFD, command, COMMAND_SIZE);
+    CLIENT_waitForRead(command);
+
     commandType = COMMAND_getType(command);
 
     if (commandType == LSTinderUser) {
@@ -80,6 +81,8 @@ void CLIENT_connect (Configuration * configuration) {
 
   Command command;
   CommandType commandType;
+  pthread_t listenThread;
+  int * socketAux;
 
   COMMAND_create(command);
   COMMAND_setType(command, CLIENT_CONNECTION_REQUEST);
@@ -103,6 +106,11 @@ void CLIENT_connect (Configuration * configuration) {
 
         write (1, CLIENT_OK_CONNECTION_MESSAGE, strlen(CLIENT_OK_CONNECTION_MESSAGE));
         pthread_create(&(threadUpdate), NULL, CLIENT_updateThread, &conf.mortyRefresh);
+
+        socketAux = (int *) malloc (sizeof(int));
+        *socketAux = configuration->clientSocketFD;
+
+        pthread_create(&listenThread, NULL, CLIENT_listenLSTinder, socketAux);
       }
 
       if (commandType == LSTinderConnectionKO) {
@@ -111,4 +119,72 @@ void CLIENT_connect (Configuration * configuration) {
       }
     }
   }
+}
+
+void* CLIENT_listenLSTinder (void* socket) {
+
+  int sdf = *(int*)socket;
+  free(socket);
+
+  Command commandAux;
+  Client clientAux;
+  CommandType commandType;
+  int matchStatus = -1;
+
+  do {
+
+    read(sdf, commandAux, COMMAND_SIZE);
+
+    pthread_mutex_lock(&semaforComanda);
+    COMMAND_copy(commandReaded, commandAux);
+    commandType = COMMAND_getType(commandReaded);
+
+
+    if (commandType != LSTinderMatch) {
+
+      pthread_mutex_lock(&semaforWait);
+      waitRead = 1;
+      pthread_mutex_unlock(&semaforWait);
+
+      if (commandType == LSTinderFiUser || commandType == LSTinderUser) pthread_kill(threadUpdate, SIGUSR1);
+      if (commandType == LSTinderClientOK || commandType == LSTinderClientKO) kill(getpid(), SIGUSR1);
+      if (commandType == LSTinderDeleteOK|| commandType == LSTinderDeleteKO) {
+        pthread_mutex_lock(&semaforLlista);
+        LLISTA_vesInici(&llistaClients);
+        while (!LLISTA_fi(llistaClients)) {
+
+          clientAux = LLISTA_consulta(llistaClients);
+          pthread_kill(clientAux.threadClient, SIGUSR1);
+          LLISTA_avanca(&llistaClients);
+        }
+        pthread_mutex_unlock(&semaforLlista);
+      }
+    } else {
+
+      int port = COMMAND_getPort(commandReaded);
+      char * name1 = COMMAND_getData(commandReaded, 15, 29);
+      char * name2 = COMMAND_getData(commandReaded, 30, 44);
+      pthread_mutex_unlock(&semaforComanda);
+      SERVER_sendMatch(port, name1, name2, &matchStatus);
+    }
+  } while(1);
+
+  return NULL;
+}
+
+void CLIENT_waitForRead(Command command) {
+
+  pthread_mutex_lock(&semaforWait);
+  waitRead = 0;
+
+  while(!waitRead) {
+    pthread_mutex_unlock(&semaforWait);
+    pause();
+    pthread_mutex_lock(&semaforWait);
+  }
+
+  pthread_mutex_unlock(&semaforWait);
+
+  COMMAND_copy(command, commandReaded);
+  pthread_mutex_unlock(&semaforComanda);
 }

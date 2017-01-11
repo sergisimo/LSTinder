@@ -107,6 +107,7 @@ void LLISTA_destrueix(Llista * llista) {
     free(llista->ant->e.nickName);
     free(llista->ant->e.info.name);
     free(llista->ant->e.info.description);
+    if (SEENLIST_isCreated(llista->ant->e.seenList)) SEENLIST_destrueix(&llista->ant->e.seenList);
     close(llista->ant->e.fdClient);
   }
 

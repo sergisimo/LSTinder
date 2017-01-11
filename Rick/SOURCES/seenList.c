@@ -102,6 +102,11 @@ void SEENLIST_destrueix(SeenList * llista) {
   free(llista->ant);
 }
 
+int SEENLIST_isCreated(SeenList llista) {
+
+  return llista.pri != NULL && llista.ant != NULL;
+}
+
 void SEENLIST_vesInici(SeenList * llista) {
 
   llista->ant = llista->pri;

@@ -63,4 +63,8 @@
 
 	char * COMMAND_getData(Command command, int start, int final);
 
+	int COMMAND_getPort(Command command);
+
+	void COMMAND_copy(Command dest, Command origin);
+
 #endif

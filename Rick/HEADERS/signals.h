@@ -20,6 +20,8 @@
 
 	extern pthread_mutex_t semaforLlista;
 	extern pthread_mutex_t semaforLlistaMortys;
+	extern pthread_mutex_t semaforComanda;
+	extern pthread_mutex_t semaforWait;
 
   //Capçaleres
 	/* **********************************************

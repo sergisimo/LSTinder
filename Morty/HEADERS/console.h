@@ -21,6 +21,7 @@
   #define CONSOLE_YES    "yes"
   #define CONSOLE_NO    "no"
   #define CONSOLE_END    "end"
+  #define CONSOLE_STOPPED   "stopped"
   #define CONSOLE_SEARCH_RESPONSE    "\nComanda identificada!\n"
   #define CONSOLE_EXIT_RESPONSE    "\nEsperem que hagis trobat el teu Morty ideal.\n\n"
   #define CONSOLE_NOT_FOUND_COMMAND    "Comanda inexistent!\n"

@@ -67,6 +67,7 @@
 		Information info;
 		SeenList seenList;
 		int fdClient;
+		pthread_t threadClient;
 		struct sockaddr_in clientSocket;
 	} Client;
 
@@ -127,5 +128,7 @@
 	Configuration conf;
 	int update;
 	pthread_t threadUpdate;
+	Command commandReaded;
+	int waitRead;
 
 #endif

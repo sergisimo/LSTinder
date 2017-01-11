@@ -13,10 +13,19 @@
 
   /**** LLIBRERIES PROPIES ****/
   #include "command.h"
+  #include "io.h"
+  #include "console.h"
 
   /**** CONSTANTS ****/
   #define CLIENT_CONECTION "[Connected]\n"
   #define CLIENT_CONECTING "\n[Conecting Rick...]\n"
+  #define CONECTION_INITIALIZING_XAT "\nChat iniciat...\n"
+  #define CONECTION_XAT_EXIT "exit"
+  #define CONECTION_FORCE_EXIT "\nIntrodueixi EXIT siusplau!\n"
+  #define CONECTION_XAT_EXIT_NOTIFICATION "\nXat tancat correctament.\n"
+  #define CONECTION_XAT_ENTER_NOTIFICATION "Apreta enter per entrar al xat!\n"
+  #define CONECTION_XAT_USER_LEFT "\nL'altre usuari ha sortit del xat, introdueix la comanda \"EXIT\".\n"
+
 
   /**** CAPÇALERES ****/
 
@@ -46,7 +55,9 @@
     * @Ret : En el nostre cas retornara null.
     *
     ************************************************/
-    //void* CONECTION_listenServer (void* socket) ;
+    void* CONECTION_listenServer (void* socket);
+
+    void CONNECTION_waitForRead();
 
     /* **********************************************
      *
@@ -63,5 +74,11 @@
      *
      ************************************************/
     void CONECTION_desconection(Configuration conf, int socket, int valor);
+
+    void CONECTION_connectXat(int port, char * matchName);
+
+    void CONECTION_writeXat(int fd);
+
+    void* CONECTION_llegirThread (void* fdAux);
 
 #endif

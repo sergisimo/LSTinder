@@ -11,10 +11,11 @@
 void SIGNALS_initializeSignals() {
 
   signal(SIGINT, SINGNALS_handleSignals);
+  signal(SIGUSR1, SINGNALS_handleSignals);
 }
 
 void SINGNALS_handleSignals(int signal) {
-  
+
   switch (signal) {
     case SIGINT:
       CONECTION_desconection(configuration, configuration.sock, 0);

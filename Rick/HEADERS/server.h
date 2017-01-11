@@ -14,6 +14,7 @@
 	#include "seenList.h"
 	#include "io.h"
 	#include "command.h"
+	#include "client.h"
 
   //Constants
   #define SERVER_MAX_CONNECTIONS 20
@@ -47,5 +48,7 @@
 	int SERVER_handleConnex(Command command, Client * client);
 
 	int SERVER_handleRequest(Command command, Client client);
+
+	void SERVER_sendMatch(int port, char * name1, char * name2, int * matchStatus);
 
 #endif

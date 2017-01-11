@@ -147,3 +147,12 @@ char * COMMAND_getData(Command command, int start, int final) {
 
   return destination;
 }
+
+void COMMAND_copy(Command dest, Command origin) {
+
+  int i;
+
+  for (i = 0; i < COMMAND_SIZE; i++) {
+    dest[i] = origin[i];
+  }
+}
